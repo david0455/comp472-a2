@@ -5,9 +5,19 @@ class Rules(object):
 
     def _init_(self):
         self.total_cost = 0
+        
         self.puzzle = []
+        self.zero_pos = self.find() # TODO: need to init self.puzzle to FILE PUZZLE so this can work
+
         self.openq = []
         self.closedq = []
+
+    # Finds the coordinates of the 0 tile
+    def find(self):
+        for row in range(4):
+            for col in range(2):
+                if self.puzzle[row][col] == 0:
+                    return row, col
 
     def swap(self, List, current_pos, next_pos):
         curr_row = current_pos[0]
@@ -17,117 +27,115 @@ class Rules(object):
         temp_col = next_pos[1]
         temp_val = List[temp_row][temp_col]
 
+        # Set new position for ZERO
         List[temp_row][temp_col] = List[curr_row][curr_col]
+        # Set old position to temp value
         List[curr_row][curr_col] = temp_val
+        # Set current position of ZERO
+        self.zero_pos = [temp_row, temp_col]
 
     # TODO: replace length with column dimension from init
     def moveUp(self):
-        row, col = self.find()
+        row, col = self.zero_pos
 
         # TODO: Probably will have dimension of puzzle at start so use that instead of length
         # If ZERO is at first row, then illegal
         if row == 0:
             raise Exception('Illegal move -> cannot move UP')
 
-        self.swap(self.puzzle, (row, col), (row - 1, col))
+        self.swap(self.puzzle, [row, col], [row - 1, col])
         self.total_cost += 1
 
     # TODO: replace length with column dimension from init
     def moveDown(self):
-        row, col = self.find()
+        row, col = self.zero_pos
 
         # TODO: Probably will have dimension of puzzle at start so use that instead of length
         # If ZERO is at last row, then illegal
         if row == len(self.puzzle) - 1:
             raise Exception('Illegal move -> cannot move DOWN')
 
-        self.swap(self.puzzle, (row, col), (row + 1, col))
+        self.swap(self.puzzle, [row, col], [row + 1, col])
         self.total_cost += 1
 
     def moveLeft(self):
-        row, col = self.find()
+        row, col = self.zero_pos
 
         # TODO: Probably will have dimension of puzzle at start so use that instead of length
         # If ZERO is at first column, then illegal
         if col == 0:
             raise Exception('Illegal move -> cannot move LEFT')
 
-        self.swap(self.puzzle, (row, col), (row, col - 1))
+        self.swap(self.puzzle, [row, col], [row, col - 1])
         self.total_cost += 1
 
+    # TODO: replace length with column dimension from init
     def moveRight(self):
-        row, col = self.find()
+        row, col = self.zero_pos
 
         # TODO: Probably will have dimension of puzzle at start so use that instead of length
         # If ZERO is at last column, then illegal
         if col == len(self.puzzle[0]) - 1:
             raise Exception('Illegal move -> cannot move RIGHT')
 
-        self.swap(self.puzzle, (row, col), (row, col + 1))
+        self.swap(self.puzzle, [row, col], [row, col + 1])
         self.total_cost += 1
 
     # TODO: replace length with column dimension from init
     def moveWrap(self):
-        row, col = self.find()
+        row, col = self.zero_pos
 
         if col == 0:
-            self.swap(self.puzzle, (row, col), (row, -1))
+            self.swap(self.puzzle, [row, col], [row, -1])
         elif col == len(self.puzzle[0]) - 1:
-            self.swap(self.puzzle, (row, col), (row, 0))
+            self.swap(self.puzzle, [row, col], [row, 0])
         else:
             raise Exception('Illegal move -> cannot move WRAP')
         self.total_cost += 2
 
     # TODO: replace length with column dimension from init
     def moveDiagonal(self):
-        row, col = self.find()
+        row, col = self.zero_pos
 
         # Top Left Corner
         if row == 0 and col == 0:
-            self.swap(self.puzzle, (row, col), (row + 1, col + 1))
+            self.swap(self.puzzle, [row, col], [row + 1, col + 1])
         # Top Right Corner
         elif row == 0 and col == len(self.puzzle[0]) - 1:
-            self.swap(self.puzzle, (row, col), (row + 1, col - 1))
+            self.swap(self.puzzle, [row, col], [row + 1, col - 1])
         # Bottom Left Corner
         elif row == len(self.puzzle) and col == 0:
-            self.swap(self.puzzle, (row, col), (row - 1, col + 1))
+            self.swap(self.puzzle, [row, col], [row - 1, col + 1])
         # Bottom Right Corner
         elif row == len(self.puzzle) and col == len(self.puzzle[0]) - 1:
-            self.swap(self.puzzle, (row, col), (row - 1, col - 1))
+            self.swap(self.puzzle, [row, col], [row - 1, col - 1])
         else:
             raise Exception('Illegal move -> cannot move DIAGONAL')
         self.total_cost += 3
 
     def moveDiagWrap(self):
-        row, col = self.find()
+        row, col = self.zero_pos
 
         # Top Left Corner
         if row == 0 and col == 0:
-            self.swap(self.puzzle, (row, col), (-1, -1))
+            self.swap(self.puzzle, [row, col], (-1, -1))
         # Top Right Corner
         elif row == 0 and col == len(self.puzzle[0]) - 1:
-            self.swap(self.puzzle, (row, col), (-1, 0))
+            self.swap(self.puzzle, [row, col], (-1, 0))
         # Bottom Left Corner
         elif row == len(self.puzzle) and col == 0:
-            self.swap(self.puzzle, (row, col), (0, -1))
+            self.swap(self.puzzle, [row, col], (0, -1))
         # Bottom Right Corner
         elif row == len(self.puzzle) and col == len(self.puzzle[0]) - 1:
-            self.swap(self.puzzle, (row, col), (0, 0))
+            self.swap(self.puzzle, [row, col], (0, 0))
         else:
             raise Exception('Illegal move -> cannot move DIAGONAL')
         self.total_cost += 3
 
-    # Finds the coordinates of the 0 tile
-    def find(self):
-        for row in range(4):
-            for col in range(2):
-                if self.puzzle[row][col] == 0:
-                    return row, col
-
     # TODO: Might be shit lul
     # Defines the available moves for 2x4 puzzle
     def available_moves(self):
-        row, col = self.find()
+        row, col = self.zero_pos
 
         # For 2x4 puzzles only
         # if in a corner

@@ -35,3 +35,8 @@ print(test)
 test2 = [0, 1, 2, 3]
 print(test[-1][-1])
 
+arr = [0, 1]
+arr = [2, 3]
+row, col = arr
+print(row)
+print(col)
