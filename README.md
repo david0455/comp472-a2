@@ -14,6 +14,9 @@ Team name: ChickenNuggets
 
 ## Task Division
 
+**Note:** We did pair-programming for most of this assignment. Therefore, the contribution in github may not reflect the actual contribution of each person.
+
+
 **David Chen**:
 
 
