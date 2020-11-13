@@ -6,7 +6,7 @@ from puzzle_rules import Rules
 
 class UniformCostSearch():
 
-    def _init_(self):
+    def __init__(self):
         self.start_State = []
         self.visited_State = ()
         self.closed_State = []  # list of visited states
