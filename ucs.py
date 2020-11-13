@@ -91,13 +91,13 @@ class UniformCostSearch():
                     
                     self.closed_State.append(self.visited_State) #put visited state in closed state
                     self.possible_Moves = rl.generate_moves()
-
+                    print(self.closed_State)
                     print(self.possible_Moves.queue)
                     while not self.possible_Moves.empty():
                         self.child_cost, self.child_moved_tile, self.next_move = self.possible_Moves.get()
                         self.child_State = self.action_Move(self.next_move, rl)
                         
-                        if (self.child_State not in self.closed_State) and not self.open_State.queue:  # check if the child is in closed list or open priority queue
+                        if self.child_State not in self.closed_State and not self.open_State.queue:  # check if the child is in closed list or open priority queue
                             self.path.append(self.moved_tile, self.cost)
                             self.open_State.put([self.child_cost, self.child_moved_tile, self.next_move, self.child_State, self.path])
                         elif self.open_State: # if the child in priority queue has higher PATH-COST than this child, replace it
