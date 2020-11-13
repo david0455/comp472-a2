@@ -2,21 +2,103 @@ import numpy as np
 import pandas as pd
 import queue as Q
 
-# input_txt = pd.read_csv('samplePuzzles.txt', sep=' ', header=None)
-input_txt = np.loadtxt('samplePuzzles.txt', delimiter=' ')
-# input_txt is a 2d array
-# where each row == 1 input_txt
-print(input_txt)
-print()
-print(input_txt[0]) # row 1 == input_txt 1
 
+##################################################################
+##################################################################
+#######     array of arrays
+#######     array of arrays
+#######     array of arrays
+#######     array of arrays
+##################################################################
+##################################################################
+
+# numbersList = []
+
+# listofNumbers = [1,2,3]
+# secondListofNumbers = [4,5,6]
+
+# numbersList.append(listofNumbers)
+# numbersList.append(secondListofNumbers)
+
+# for number in numbersList:
+#     print(number)
+
+# print(numbersList[0])
+
+#######
+arrOfarr = []
+
+##################################################################
+##################################################################
+#######     Priority Queue
+#######     Priority Queue
+#######     Priority Queue
+#######     Priority Queue
+##################################################################
+##################################################################
+
+pq = Q.PriorityQueue()
+arr1 = [1, 2, 3]
+arr2 = [2, 1, 3]
+arr3 = [2, 3, 1]
+
+# (cost, move, state_arr, uID)
+pq.put((1, 'up', arr1, 0))
+pq.put((2, 'wrap', arr2, 1))
+pq.put((1, 'down', arr3, 2))
+
+print('queue = ', pq.queue) # prints content of PriorityQueue
 print()
-puzzle1 = input_txt[0].reshape(2, 4)
-print(puzzle1)
-print(puzzle1[0][-1])
-print('shape = ', puzzle1.shape)
-print('row = ', puzzle1.shape[0])
-print('col = ', puzzle1.shape[1])
+# iterates over PriorityQueue and print in ascending order of cost
+# if same cost, prints in alphabetical order
+while not pq.empty():
+   # print('pq.get() = ', pq.get())
+    arrOfarr.append(pq.get())
+
+print('queue = ', pq.queue)
+print('array of array = ', arrOfarr)
+print(arrOfarr[0])
+print()
+
+def findUID(List, uID):
+    for tup in List:
+        print(tup[2])
+    if (uID == np.where(List == uID)):
+        print(uID)
+findUID(arrOfarr, 2)
+##################################################################
+##################################################################
+#######     load text file with numpy
+#######     load text file with numpy
+#######     load text file with numpy
+#######     load text file with numpy
+##################################################################
+##################################################################
+
+# # input_txt = pd.read_csv('samplePuzzles.txt', sep=' ', header=None)
+# input_txt = np.loadtxt('samplePuzzles.txt', delimiter=' ')
+# # input_txt is a 2d array
+# # where each row == 1 input_txt
+# print(input_txt)
+# print()
+# print(input_txt[0]) # row 1 == input_txt 1
+
+# print()
+# puzzle1 = input_txt[0].reshape(2, 4)
+# print(puzzle1)
+# print(puzzle1[0][-1])
+# print('shape = ', puzzle1.shape)
+# print('row = ', puzzle1.shape[0])
+# print('col = ', puzzle1.shape[1])
+
+##################################################################
+##################################################################
+#######     numpy 2d array
+#######     numpy 2d array
+#######     numpy 2d array
+#######     numpy 2d array
+##################################################################
+##################################################################
 
 # # 2d array
 # arr2d = np.array(
@@ -35,21 +117,15 @@ print('col = ', puzzle1.shape[1])
 # print(col)
 # # print(arr2d[row][col])       BAD
 
-# pq = Q.PriorityQueue()
 
-# pq.put((1, 'up'))
-# pq.put((2, 'wrap'))
-# pq.put((1, 'down'))
-
-# print(pq.queue) # prints content of PriorityQueue
-
-# # iterates over PriorityQueue and print in ascending order of cost
-# # if same cost, prints in alphabetical order
-# while not pq.empty():
-#     print(pq.get())
-
-# print(pq.queue)
-
+##################################################################
+##################################################################
+#######     testing swap and array manipulation
+#######     testing swap and array manipulation
+#######     testing swap and array manipulation
+#######     testing swap and array manipulation
+##################################################################
+##################################################################
 
 # A = np.eye(3)
 # print(A)
