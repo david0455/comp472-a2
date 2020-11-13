@@ -49,24 +49,27 @@ class UniformCostSearch():
     
     # initial_State = self.get_Start_State("file")
     def ucs(self, initial_State):
+        self.printPath()
         if len(initial_State) > 0:
-
+            self.printPath()
             # iterate all the puzzles in file
             for i in range(len(initial_State)):
+                self.printPath()
                 rl = Rules(initial_State[i])
                 if rl.checkGoal(): #if initial state is equal to goal, end ucs
-                    return "Already at goal state" 
+                    return print("Already at goal state") 
 
                 self.open_State.put([0, 0, initial_State[i], [0,0]])  # initial-state: (Path-Cost=0, moved_tile=0, curr _puzzle = Starting Puzzle, Path = [0,0])     
 
                 while not self.open_State.empty():
+                    self.printPath()
                     self.cost, self.moved_tile, self.visited_State, self.path = self.open_State.get() #pop first element with lowest cost in priority queue
                     rl2 = Rules(self.visited_State)
                     # apply goal function
                     if rl2.checkGoal():
                         self.closed_State.append(self.visited_State) #put the last visited node in closed list
                         self.path.append((self.moved_tile, self.cost))
-                        return self.path #return solution path
+                        return print(self.path) #return solution path
                     
                     if self.visited_State not in self.closed_State:
                          self.closed_State.append(self.visited_State) #put visited state in closed state
@@ -95,3 +98,5 @@ def main():
     solve = UniformCostSearch()
     solve.ucs(initial_States)
 
+if __name__ == '__main__':
+    main()
