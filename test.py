@@ -37,59 +37,62 @@ arrOfarr = []
 ##################################################################
 ##################################################################
 
-pq = Q.PriorityQueue()
-arr1 = [1, 2, 3]
-arr2 = [2, 1, 3]
-arr3 = [2, 3, 1]
+# pq = Q.PriorityQueue()
+# arr1 = [1, 2, 3]
+# arr2 = [2, 1, 3]
+# arr3 = [2, 3, 1]
 
-# (cost, move, state_arr, uID)
-pq.put((1, 'up', arr1, 0))
-pq.put((2, 'wrap', arr2, 1))
-pq.put((1, 'down', arr3, 2))
+# # (cost, move, state_arr, uID)
+# pq.put((1, 'up', arr1, 0))
+# pq.put((2, 'wrap', arr2, 1))
+# pq.put((1, 'down', arr3, 2))
 
-print('queue = ', pq.queue) # prints content of PriorityQueue
-print()
-# iterates over PriorityQueue and print in ascending order of cost
-# if same cost, prints in alphabetical order
-while not pq.empty():
-   # print('pq.get() = ', pq.get())
-    arrOfarr.append(pq.get())
-
-print('queue = ', pq.queue)
-print('array of array = ', arrOfarr)
-print(arrOfarr[0])
-print()
-
-def findUID(List, uID):
-    for tup in List:
-        print(tup[2])
-    if (uID == np.where(List == uID)):
-        print(uID)
-findUID(arrOfarr, 2)
-##################################################################
-##################################################################
-#######     load text file with numpy
-#######     load text file with numpy
-#######     load text file with numpy
-#######     load text file with numpy
-##################################################################
-##################################################################
-
-# # input_txt = pd.read_csv('samplePuzzles.txt', sep=' ', header=None)
-# input_txt = np.loadtxt('samplePuzzles.txt', delimiter=' ')
-# # input_txt is a 2d array
-# # where each row == 1 input_txt
-# print(input_txt)
+# print('queue = ', pq.queue) # prints content of PriorityQueue
 # print()
-# print(input_txt[0]) # row 1 == input_txt 1
+# # iterates over PriorityQueue and print in ascending order of cost
+# # if same cost, prints in alphabetical order
+# while not pq.empty():
+#    # print('pq.get() = ', pq.get())
+#     arrOfarr.append(pq.get())
 
+# print('queue = ', pq.queue)
+# print('array of array = ', arrOfarr)
+# print(arrOfarr[0])
 # print()
-# puzzle1 = input_txt[0].reshape(2, 4)
-# print(puzzle1)
-# print(puzzle1[0][-1])
-# print('shape = ', puzzle1.shape)
-# print('row = ', puzzle1.shape[0])
-# print('col = ', puzzle1.shape[1])
+
+# def findUID(List, uID):
+#     for tup in List:
+#         print(tup[2])
+#     if (uID == np.where(List == uID)):
+#         print(uID)
+# findUID(arrOfarr, 2)
+
+##################################################################
+##################################################################
+#######     load text file with numpy
+#######     load text file with numpy
+#######     load text file with numpy
+#######     load text file with numpy
+##################################################################
+##################################################################
+
+# input_txt = pd.read_csv('samplePuzzles.txt', sep=' ', header=None)
+input_txt = np.loadtxt('samplePuzzles.txt', delimiter=' ')
+# input_txt is a 2d array
+# where each row == 1 input_txt
+print(input_txt)
+print()
+print(input_txt[0]) # row 1 == input_txt 1
+print('ndim = ', input_txt.ndim)
+
+
+print()
+puzzle1 = input_txt[0].reshape(2, 4)
+print(puzzle1)
+print(puzzle1[0][-1])
+print('shape = ', puzzle1.shape)
+print('row = ', puzzle1.shape[0])
+print('col = ', puzzle1.shape[1])
 
 ##################################################################
 ##################################################################
