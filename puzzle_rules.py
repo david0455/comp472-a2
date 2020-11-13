@@ -48,6 +48,14 @@ class Rules(object):
     ##################################################################
     ##################################################################
 
+    def getUp(self):
+        row, col = self.zero_pos
+
+        if row == 0:
+            raise Exception('Illegal move -> cannot get UP')
+
+        return self.puzzle[row-1][col]
+    
     def moveUp(self):
         row, col = self.zero_pos
 
@@ -59,6 +67,14 @@ class Rules(object):
         self.swap(self.puzzle, [row, col], [row - 1, col])
         self.total_cost += 1
 
+    def getDown(self):
+        row, col = self.zero_pos
+
+        if row == self.puzzle.shape[0] - 1:
+            raise Exception('Illegal move -> cannot get DOWN')
+
+        return self.puzzle[row+1][col]
+
     def moveDown(self):
         row, col = self.zero_pos
 
@@ -69,6 +85,14 @@ class Rules(object):
         self.swap(self.puzzle, [row, col], [row + 1, col])
         self.total_cost += 1
 
+    def getLeft(self):
+        row, col = self.zero_pos
+
+        if col == 0:
+            raise Exception('Illegal move -> cannot get LEFT')
+
+        return self.puzzle[row][col-1]
+    
     def moveLeft(self):
         row, col = self.zero_pos
 
@@ -79,6 +103,14 @@ class Rules(object):
         self.swap(self.puzzle, [row, col], [row, col - 1])
         self.total_cost += 1
 
+    def getRight(self):
+        row, col = self.zero_pos
+
+        if col == self.puzzle.shape[1] - 1:
+            raise Exception('Illegal move -> cannot get RIGHT')
+
+        return self.puzzle[row][col+1]
+    
     def moveRight(self):
         row, col = self.zero_pos
 
@@ -89,6 +121,16 @@ class Rules(object):
         self.swap(self.puzzle, [row, col], [row, col + 1])
         self.total_cost += 1
 
+    def getWrap(self):
+        row, col = self.zero_pos
+
+        if (row == 0 or row == self.puzzle.shape[0] - 1) and col == 0:
+            return self.puzzle[row][-1]
+        elif (row == 0 or row == self.puzzle.shape[0] - 1) and col == self.puzzle.shape[1] - 1:
+            return self.puzzle[row][0]
+        else:
+            raise Exception('Illegal move -> cannot get WRAP')
+    
     def moveWrap(self):
         row, col = self.zero_pos
 
@@ -100,6 +142,24 @@ class Rules(object):
             raise Exception('Illegal move -> cannot move WRAP')
         self.total_cost += 2
 
+    def getDiagonal(self):
+        row, col = self.zero_pos
+
+        # Top Left Corner
+        if row == 0 and col == 0:
+            return self.puzzle[row+1][col+1]
+        # Top Right Corner
+        elif row == 0 and col == self.puzzle.shape[1] - 1:
+            return self.puzzle[row+1][col-1]
+        # Bottom Left Corner
+        elif row == self.puzzle.shape[0] - 1 and col == 0:
+            return self.puzzle[row-1][col+1]
+        # Bottom Right Corner
+        elif row == self.puzzle.shape[0] - 1 and col == self.puzzle.shape[1] - 1:
+            return self.puzzle[row-1][col-1]
+        else:
+            raise Exception('Illegal move -> cannot get DIAGONAL')
+    
     def moveDiagonal(self):
         row, col = self.zero_pos
 
@@ -119,23 +179,41 @@ class Rules(object):
             raise Exception('Illegal move -> cannot move DIAGONAL')
         self.total_cost += 3
 
+    def getDiagWrap(self):
+        row, col = self.zero_pos
+
+        # Top Left Corner
+        if row == 0 and col == 0:
+            return self.puzzle[-1][-1]
+        # Top Right Corner
+        elif row == 0 and col == self.puzzle.shape[1] - 1:
+            return self.puzzle[-1][0]
+        # Bottom Left Corner
+        elif row == self.puzzle.shape[0] - 1 and col == 0:
+            return self.puzzle[0][-1]
+        # Bottom Right Corner
+        elif row == self.puzzle.shape[0] - 1 and col == self.puzzle.shape[1] - 1:
+            return self.puzzle[0][0]
+        else:
+            raise Exception('Illegal move -> cannot get DIAGONAL WRAP')
+    
     def moveDiagWrap(self):
         row, col = self.zero_pos
 
         # Top Left Corner
         if row == 0 and col == 0:
-            self.swap(self.puzzle, [row, col], (-1, -1))
+            self.swap(self.puzzle, [row, col], [-1, -1])
         # Top Right Corner
         elif row == 0 and col == self.puzzle.shape[1] - 1:
-            self.swap(self.puzzle, [row, col], (-1, 0))
+            self.swap(self.puzzle, [row, col], [-1, 0])
         # Bottom Left Corner
         elif row == self.puzzle.shape[0] - 1 and col == 0:
-            self.swap(self.puzzle, [row, col], (0, -1))
+            self.swap(self.puzzle, [row, col], [0, -1])
         # Bottom Right Corner
         elif row == self.puzzle.shape[0] - 1 and col == self.puzzle.shape[1] - 1:
-            self.swap(self.puzzle, [row, col], (0, 0))
+            self.swap(self.puzzle, [row, col], [0, 0])
         else:
-            raise Exception('Illegal move -> cannot move DIAGONAL')
+            raise Exception('Illegal move -> cannot move DIAGONAL WRAP')
         self.total_cost += 3
 
     # Generates the available moves
@@ -145,21 +223,21 @@ class Rules(object):
         pq = Q.PriorityQueue()
 
         if row != 0:
-            pq.put((1, 'up'))
+            pq.put((1, 'up', self.puzzle))
         if row != self.puzzle.shape[0] - 1 :
-            pq.put((1, 'down'))
+            pq.put((1, 'down', self.puzzle))
         if col != 0:
-            pq.put((1, 'left'))
+            pq.put((1, 'left', self.puzzle))
         if col != self.puzzle.shape[1] - 1:
-            pq.put((1, 'right'))
+            pq.put((1, 'right', self.puzzle))
 
         if ((row == 0 and col == 0)
         or (row == 0 and col == self.puzzle.shape[1] - 1)
         or (row == self.puzzle.shape[0] - 1 and col == 0)
         or (row == self.puzzle.shape[0] - 1 and col == self.puzzle.shape[1] - 1)):
-            pq.put((2, 'wrap'))
-            pq.put((3, 'diag'))
-            pq.put((3, 'diag_wrap'))
+            pq.put((2, 'wrap', self.puzzle))
+            pq.put((3, 'diag', self.puzzle))
+            pq.put((3, 'diag_wrap', self.puzzle))
         
         return pq
 
