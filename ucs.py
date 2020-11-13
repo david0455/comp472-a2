@@ -49,12 +49,12 @@ class UniformCostSearch():
     
     # initial_State = self.get_Start_State("file")
     def ucs(self, initial_State):
-        self.printPath()
+        print("entered ucs")
         if len(initial_State) > 0:
-            self.printPath()
+            print("entered first if")
             # iterate all the puzzles in file
             for i in range(len(initial_State)):
-                self.printPath()
+                print(initial_State[i])
                 rl = Rules(initial_State[i])
                 if rl.checkGoal(): #if initial state is equal to goal, end ucs
                     return print("Already at goal state") 
@@ -62,11 +62,11 @@ class UniformCostSearch():
                 self.open_State.put([0, 0, initial_State[i], [0,0]])  # initial-state: (Path-Cost=0, moved_tile=0, curr _puzzle = Starting Puzzle, Path = [0,0])     
 
                 while not self.open_State.empty():
-                    self.printPath()
+                    print("entered while loop")
                     self.cost, self.moved_tile, self.visited_State, self.path = self.open_State.get() #pop first element with lowest cost in priority queue
-                    rl2 = Rules(self.visited_State)
+
                     # apply goal function
-                    if rl2.checkGoal():
+                    if rl.checkGoal():
                         self.closed_State.append(self.visited_State) #put the last visited node in closed list
                         self.path.append((self.moved_tile, self.cost))
                         return print(self.path) #return solution path
@@ -90,7 +90,7 @@ def get_Start_State(puzzle_file):
     input_file = np.loadtxt(puzzle_file, delimiter=' ')
     puzzle_list = []
     for i in range(input_file.ndim+1):
-        list.append(input_file[i].reshape(2,4)) # reshape 1D array(s) to 2x4 (row x col) 2D array
+        puzzle_list.append(input_file[i].reshape(2,4)) # reshape 1D array(s) to 2x4 (row x col) 2D array
     return puzzle_list
 
 def main():
