@@ -3,20 +3,24 @@ import queue as Q
 
 class Rules(object):
 
-    def _init_(self):
+    def _init_(self, puzzle):
         self.total_cost = 0
         
-        self.input_txt = np.loadtxt('samplePuzzles.txt', delimiter=' ')
-        # TODO: self.puzzle
-        # TODO: this only takes first line of text file
-        # TODO: need to assign each line as a puzzle
-        self.puzzle = self.input_txt[0].reshape(2, 4)
+        # self.input_txt = np.loadtxt('samplePuzzles.txt', delimiter=' ')
+        # # TODO: self.puzzle
+        # # TODO: this only takes first line of text file
+        # # TODO: need to assign each line as a puzzle
+        # self.puzzle = self.input_txt[0].reshape(2, 4)
+        self.puzzle = puzzle
         self.zero_pos = self.find()
 
         self.openq = []
         self.closedq = []
 
-    # TODO: np.where()
+    def getTotalCost(self):
+        return self.total_cost
+
+    # TODO: np.where() could be better?
     # Finds the coordinates of the 0 tile
     def find(self):
         for row in range(4):
@@ -223,34 +227,35 @@ class Rules(object):
         pq = Q.PriorityQueue()
 
         if row != 0:
-            pq.put((1, 'up', self.puzzle))
+            pq.put((1, self.getUp(), self.puzzle))
         if row != self.puzzle.shape[0] - 1 :
-            pq.put((1, 'down', self.puzzle))
+            pq.put((1, self.getDown(), self.puzzle))
         if col != 0:
-            pq.put((1, 'left', self.puzzle))
+            pq.put((1, self.getLeft(), self.puzzle))
         if col != self.puzzle.shape[1] - 1:
-            pq.put((1, 'right', self.puzzle))
+            pq.put((1, self.getRight(), self.puzzle))
 
         if ((row == 0 and col == 0)
         or (row == 0 and col == self.puzzle.shape[1] - 1)
         or (row == self.puzzle.shape[0] - 1 and col == 0)
         or (row == self.puzzle.shape[0] - 1 and col == self.puzzle.shape[1] - 1)):
-            pq.put((2, 'wrap', self.puzzle))
-            pq.put((3, 'diag', self.puzzle))
-            pq.put((3, 'diag_wrap', self.puzzle))
+            pq.put((2, self.getWrap(), self.puzzle))
+            pq.put((3, self.getDiagonal(), self.puzzle))
+            pq.put((3, self.getDiagWrap(), self.puzzle))
         
         return pq
 
     # TODO: NOT DONE / CORRECT
-    def goal(self, current_state):
+    def checkGoal(self):
         goal_1 = [[1, 2, 3, 4],
                   [5, 6, 7, 0]]
 
         goal_2 = [[1, 3, 5, 7],
                   [2, 4, 6, 0]]
 
-        if (current_state == goal_1 or current_state == goal_2):
-            return 'Solved state = ' + current_state
+        if (self.puzzle == goal_1 or self.puzzle == goal_2):
+            return True
+        return False
 
 
 # TODO: Might be shit lul
