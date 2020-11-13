@@ -17,6 +17,9 @@ class Rules(object):
         self.openq = []
         self.closedq = []
 
+    def getPuzzle(self):
+        return self.puzzle
+    
     def getTotalCost(self):
         return self.total_cost
 
@@ -221,27 +224,27 @@ class Rules(object):
         self.total_cost += 3
 
     # Generates the available moves
-    # Return a PriorityQueue with (cost, moveDirection)
+    # Return a PriorityQueue with (cost, nextValue, moveDirection)
     def generate_moves(self):
         row, col = self.zero_pos
         pq = Q.PriorityQueue()
 
         if row != 0:
-            pq.put((1, self.getUp(), self.puzzle))
+            pq.put((1, self.getUp(), 'up'))
         if row != self.puzzle.shape[0] - 1 :
-            pq.put((1, self.getDown(), self.puzzle))
+            pq.put((1, self.getDown(), 'down'))
         if col != 0:
-            pq.put((1, self.getLeft(), self.puzzle))
+            pq.put((1, self.getLeft(), 'left'))
         if col != self.puzzle.shape[1] - 1:
-            pq.put((1, self.getRight(), self.puzzle))
+            pq.put((1, self.getRight(), 'right'))
 
         if ((row == 0 and col == 0)
         or (row == 0 and col == self.puzzle.shape[1] - 1)
         or (row == self.puzzle.shape[0] - 1 and col == 0)
         or (row == self.puzzle.shape[0] - 1 and col == self.puzzle.shape[1] - 1)):
-            pq.put((2, self.getWrap(), self.puzzle))
-            pq.put((3, self.getDiagonal(), self.puzzle))
-            pq.put((3, self.getDiagWrap(), self.puzzle))
+            pq.put((2, self.getWrap(), 'wrap'))
+            pq.put((3, self.getDiagonal(), 'diagonal'))
+            pq.put((3, self.getDiagWrap(), 'diagwrap'))
         
         return pq
 

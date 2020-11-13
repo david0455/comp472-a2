@@ -8,7 +8,7 @@ class UniformCostSearch():
 
     def __init__(self):
         self.start_State = []
-        self.visited_State = ()
+        self.visited_State = []
         self.closed_State = []  # list of visited states
         self.open_State = Q.PriorityQueue()  # priority queue ordered by total cost
 
@@ -43,6 +43,23 @@ class UniformCostSearch():
                     self.new_pq.put(cost)
         return self.new_pq
 
+    def action_Move(self, move, rl):
+        if move is "up":
+            rl.moveUp()
+        elif move is "down":
+            rl.moveDown()
+        elif move is "right":
+            rl.moveRight()
+        elif move is "left":
+            rl.moveLeft()
+        elif move is "diagonal":
+            rl.moveDiagonal()
+        elif move is "diagwrap":
+            rl.moveDiagWrap()
+        elif move is "wrap":
+            rl.moveWrap()
+        
+        return rl.getPuzzle()
 
     def printPath(self):
         print("hello")
@@ -59,32 +76,35 @@ class UniformCostSearch():
                 if rl.checkGoal(): #if initial state is equal to goal, end ucs
                     return print("Already at goal state") 
 
-                self.open_State.put([0, 0, initial_State[i], [0,0]])  # initial-state: (Path-Cost=0, moved_tile=0, curr _puzzle = Starting Puzzle, Path = [0,0])     
+                self.open_State.put([0, 0, None, initial_State[i] ,[0,0]])  # initial-state: (Path-Cost=0, moved_tile=0, move, curr _puzzle = Starting Puzzle, Path = [0,0])     
 
                 while not self.open_State.empty():
                     print("entered while loop")
-                    self.cost, self.moved_tile, self.visited_State, self.path = self.open_State.get() #pop first element with lowest cost in priority queue
+                    self.cost, self.moved_tile, self.move, self.visited_State, self.path = self.open_State.get() #pop first element with lowest cost in priority queue
 
                     # apply goal function
                     if rl.checkGoal():
                         self.closed_State.append(self.visited_State) #put the last visited node in closed list
                         self.path.append((self.moved_tile, self.cost))
-                        return print(self.path) #return solution path
+                        return print(self.path, self.cost) #return solution path
                     
-                    if self.visited_State not in self.closed_State: # not equal?? elm in visited != closed??
-                         self.closed_State.append(self.visited_State) #put visited state in closed state
-                         self.possible_Moves = rl.generate_moves()
-                         while not self.possible_Moves.empty():
-                            self.child_cost, self.child_moved_tile, self.child_State = self.possible_Moves.get()
-                            if (self.child_State not in self.closed_State) and not self.open_State:  # check if the child is in closed list or open priority queue
-                                self.path.append(self.moved_tile, self.cost)
-                                self.open_State.put([self.child_cost, self.child_moved_tile, self.child_State, self.path])
-                            elif self.open_State: # if the child in priority queue has higher PATH-COST than this child, replace it
-                                if self.compare_Cost(self.child_cost, self.child_State, self.open_State): 
-                                    self.open_State = self.replace_Cost(self.child_cost, self.child_State, self.open_State)
+                    
+                    self.closed_State.append(self.visited_State) #put visited state in closed state
+                    self.possible_Moves = rl.generate_moves()
 
+                    print(self.possible_Moves.queue)
+                    while not self.possible_Moves.empty():
+                        self.child_cost, self.child_moved_tile, self.next_move = self.possible_Moves.get()
+                        self.child_State = self.action_Move(self.next_move, rl)
+                        
+                        if (self.child_State not in self.closed_State) and not self.open_State.queue:  # check if the child is in closed list or open priority queue
+                            self.path.append(self.moved_tile, self.cost)
+                            self.open_State.put([self.child_cost, self.child_moved_tile, self.next_move, self.child_State, self.path])
+                        elif self.open_State: # if the child in priority queue has higher PATH-COST than this child, replace it
+                            if self.compare_Cost(self.child_cost, self.child_State, self.open_State): 
+                                self.open_State = self.replace_Cost(self.child_cost, self.child_State, self.open_State)
 
-        return None
+        return print("No Solution")
 
 def get_Start_State(puzzle_file):
     input_file = np.loadtxt(puzzle_file, delimiter=' ')
