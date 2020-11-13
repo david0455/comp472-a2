@@ -12,7 +12,7 @@ class UniformCostSearch():
     # you do it
 
     def _init_(self):
-        self.start_State = self.get_Start_State("file")
+        self.start_State = []
         self.visited_State = ()
         self.closed_State = []  # list of visited states
         self.open_State = Q.PriorityQueue()  # priority queue ordered by total cost
@@ -32,7 +32,8 @@ class UniformCostSearch():
         print("hello")
         # TODO: Calculate cost of move
         
-    def ucs(self, start_State):
+    def ucs(self):
+        self.start_State = self.get_Start_State("file") 
         if len(self.start_State) > 0:
 
             # iterate all the puzzles in file
@@ -42,7 +43,7 @@ class UniformCostSearch():
                     return "Already at goal state" 
 
               # self.open_State.put(cost, moved_tile, curr_puzzle, path) # parent node, priority queue 
-                self.open_State.put(0, 0, self.start_State[i], [0,0])  # initial-state: (Path-Cost=0, moved_tile=0, curr _puzzle = Starting Puzzle, Path = [0,0])     
+                open_State.put(0, 0, self.start_State[i], [0,0])  # initial-state: (Path-Cost=0, moved_tile=0, curr _puzzle = Starting Puzzle, Path = [0,0])     
 
                 while not self.open_State.empty():
                     self.visited_State = self.open_State.get() #pop first element with lowest cost in priority queue
