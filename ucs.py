@@ -6,7 +6,7 @@ from puzzle_rules import Rules
 
 class UniformCostSearch():
 
-    def _init_(self):
+    def __init__(self):
         self.start_State = []
         self.visited_State = ()
         self.closed_State = []  # list of visited states
@@ -71,7 +71,7 @@ class UniformCostSearch():
                         self.path.append((self.moved_tile, self.cost))
                         return print(self.path) #return solution path
                     
-                    if self.visited_State not in self.closed_State:
+                    if self.visited_State not in self.closed_State: # not equal?? elm in visited != closed??
                          self.closed_State.append(self.visited_State) #put visited state in closed state
                          self.possible_Moves = rl.generate_moves()
                          while not self.possible_Moves.empty():

@@ -4,7 +4,7 @@ import pandas as pd
 
 class GreedyBFS():
 
-    def _init_(self):
+    def __init__(self):
         self.start_state = self.get_start_state("file")
         self.open_state = Q.PriorityQueue()
         self.closed_state = []

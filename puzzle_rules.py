@@ -3,7 +3,7 @@ import queue as Q
 
 class Rules(object):
 
-    def _init_(self, puzzle):
+    def __init__(self, puzzle):
         self.total_cost = 0
         
         # self.input_txt = np.loadtxt('samplePuzzles.txt', delimiter=' ')
@@ -23,8 +23,8 @@ class Rules(object):
     # TODO: np.where() could be better?
     # Finds the coordinates of the 0 tile
     def find(self):
-        for row in range(4):
-            for col in range(2):
+        for row in range(self.puzzle.shape[0]):
+            for col in range(self.puzzle.shape[1]):
                 if self.puzzle[row][col] == 0:
                     return row, col
 
@@ -253,7 +253,7 @@ class Rules(object):
         goal_2 = [[1, 3, 5, 7],
                   [2, 4, 6, 0]]
 
-        if (self.puzzle == goal_1 or self.puzzle == goal_2):
+        if (self.puzzle == goal_1).all() or (self.puzzle == goal_2).all():
             return True
         return False
 
