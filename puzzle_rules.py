@@ -230,21 +230,21 @@ class Rules(object):
         pq = Q.PriorityQueue()
 
         if row != 0:
-            pq.put((1, self.getUp(), 'up'))
+            pq.put((1, self.getUp(), 'up', self.puzzle))
         if row != self.puzzle.shape[0] - 1 :
-            pq.put((1, self.getDown(), 'down'))
+            pq.put((1, self.getDown(), 'down', self.puzzle))
         if col != 0:
-            pq.put((1, self.getLeft(), 'left'))
+            pq.put((1, self.getLeft(), 'left', self.puzzle))
         if col != self.puzzle.shape[1] - 1:
-            pq.put((1, self.getRight(), 'right'))
+            pq.put((1, self.getRight(), 'right', self.puzzle))
 
         if ((row == 0 and col == 0)
         or (row == 0 and col == self.puzzle.shape[1] - 1)
         or (row == self.puzzle.shape[0] - 1 and col == 0)
         or (row == self.puzzle.shape[0] - 1 and col == self.puzzle.shape[1] - 1)):
             pq.put((2, self.getWrap(), 'wrap'))
-            pq.put((3, self.getDiagonal(), 'diagonal'))
-            pq.put((3, self.getDiagWrap(), 'diagwrap'))
+            pq.put((3, self.getDiagonal(), 'diagonal', self.puzzle))
+            pq.put((3, self.getDiagWrap(), 'diagwrap', self.puzzle))
         
         return pq
 
