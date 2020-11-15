@@ -76,23 +76,23 @@ arrOfarr = []
 ##################################################################
 ##################################################################
 
-# input_txt = pd.read_csv('samplePuzzles.txt', sep=' ', header=None)
-input_txt = np.loadtxt('samplePuzzles.txt', delimiter=' ')
-# input_txt is a 2d array
-# where each row == 1 input_txt
-print(input_txt)
-print()
-print(input_txt[0]) # row 1 == input_txt 1
-print('ndim = ', input_txt.ndim)
+# # input_txt = pd.read_csv('samplePuzzles.txt', sep=' ', header=None)
+# input_txt = np.loadtxt('samplePuzzles.txt', delimiter=' ')
+# # input_txt is a 2d array
+# # where each row == 1 input_txt
+# print(input_txt)
+# print()
+# print(input_txt[0]) # row 1 == input_txt 1
+# print('ndim = ', input_txt.ndim)
 
 
-print()
-puzzle1 = input_txt[0].reshape(2, 4)
-print(puzzle1)
-print(puzzle1[0][-1])
-print('shape = ', puzzle1.shape)
-print('row = ', puzzle1.shape[0])
-print('col = ', puzzle1.shape[1])
+# print()
+# puzzle1 = input_txt[0].reshape(2, 4)
+# print(puzzle1)
+# print(puzzle1[0][-1])
+# print('shape = ', puzzle1.shape)
+# print('row = ', puzzle1.shape[0])
+# print('col = ', puzzle1.shape[1])
 
 ##################################################################
 ##################################################################
@@ -170,3 +170,61 @@ print('col = ', puzzle1.shape[1])
 # row, col = arr2d
 # print(row)
 # print(col)
+
+
+q = Q.PriorityQueue()
+q.put((12, 3, [[1, 2, 3, 4], [5, 6, 7, 8]], [0,0]))
+q.put((2, 3,  [[9, 11, 11, 12], [13, 14, 15, 16]], [0, 0, 1, 3]))
+q.put((5, 4,  [[17, 18, 19, 20], [21, 22, 23, 24]], [0, 0, 1, 3, 4, 6]))
+
+
+p = Q.PriorityQueue()
+
+print(q.queue)
+
+closed = [[[1, 2, 3, 4], [5, 6, 7, 8]] , [[9, 10, 11, 12], [13, 14, 15, 16]], [[17, 18, 19, 20], [21, 22, 23, 24]]]
+
+print(closed)
+
+
+# if closed.count(child_state) > 0: 
+#     print(True)
+# else:
+#     print(False)
+
+# if q.queue.count(child_state) > 0: 
+#     print(True)
+# else:
+#     print(False)
+
+    
+# print(p.queue.count(child_state))    
+
+# if not(closed.count(child_state) > 0) and not(q.queue.count(child_state) > 0): 
+#     print(True)
+# else:
+#     print(False)
+
+print()
+print()
+
+closeed_state = [[3, 0, 1, 4], [2, 6, 5, 7]]
+open_state = Q.PriorityQueue()
+child = [[3, 1, 0, 4], [2, 6, 5, 7]]
+
+asd = [3, 1, 0, 4, 2, 6, 5, 7]
+testchild = np.array(asd).reshape(2,4)
+
+if (closeed_state != child):
+    print('\nnot euql\n')
+else:
+    print('\nequal\n')
+
+print('open ', open_state.queue)
+print('testchild = ', testchild)
+print(type(testchild))
+
+if not(closeed_state.count(testchild.tolist()) > 0) and not(open_state.queue.count(testchild.tolist()) > 0): 
+    print(True)
+else:
+    print(False)
