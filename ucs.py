@@ -87,7 +87,7 @@ class UniformCostSearch():
                     self.path.append((self.moved_tile, self.cost))
                     return print(self.path, self.cost) #return solution path
                 
-                self.closed_state = self.visited_state #put visited state in closed state
+                self.closed_state.append(self.visited_state) #put visited state in closed state
                 self.possible_Moves = rl.generate_moves()
 
                 while not self.possible_Moves.empty():
