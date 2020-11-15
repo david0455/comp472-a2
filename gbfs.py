@@ -41,6 +41,12 @@ class GreedyBFS():
         
         return rl.getPuzzle()
 
+    # Merge pq2 into pq1
+    def mergePQ(self, pq1, arr):
+        for item in arr:
+            pq1.put(item)
+        return pq1
+
     def gbfs(self, init_puzzle):
         rl = Rules(init_puzzle)
         if rl.checkGoal(): #if initial state is equal to goal, end ucs
@@ -49,19 +55,52 @@ class GreedyBFS():
         copy_puzzle = list(init_puzzle)
         self.open_list.put([0, 0, None, copy_puzzle, [0,0]]) # TODO: dafuq u do with this path
 
+        i = 0
         while not self.open_list.empty():
-            self.cost, self.moved_tile, self.move, self.visited_state, self.path = self.open_list.get()
-            self.closed_list.append(self.visited_state)
-
+            print('========================\ni = ', i)
+            i += 1
+            print('\n\n')
             if rl.checkGoal(): #if initial state is equal to goal, end ucs
                 return print("Already at goal state") 
-            else:
-                self.open_list.put(rl.genMove_h1()) #(self.h1(testpuzzle), self.getLeft(), 'left', testpuzzle)
-                # something with visited state
-                temp_h, temp_tile, temp_move, temp_puzzle = self.open_list.get()
-                current_puzzle = self.action_move(temp_move, rl)
 
+            temp_open = self.open_list.get()
+            print('zzzzzzzzzzz', temp_open[3])
+            self.visited_state = temp_open[3]
+            self.closed_list.append(self.visited_state)
 
+            generated_children = rl.genMove_h1() # [self.h1(testpuzzle), self.getLeft(), 'left', testpuzzle]
+            print('gen children = ', generated_children)
+            print('\n')
+
+            for item in generated_children:
+                # print('item = ', item)
+                # print('closed = ', self.closed_list)
+                # print('open = ', self.open_list.queue)
+                if item not in self.closed_list and not(self.open_list.queue.count(generated_children) > 0):
+
+                    ## TODO: remove duplicate!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+                    #self.open_list = self.mergePQ(self.open_list, generated_children) 
+                    self.open_list.put(item)
+                else:
+                    print('\nelse')
+                
+            
+            # something with visited state
+            print('CURRENT PUZZLE = ', rl.getPuzzle())
+            print('open list = ', self.open_list.queue)
+
+            temp_h, temp_tile, temp_move, temp_puzzle = self.open_list.get()
+            current_puzzle = self.action_move(temp_move, rl)
+            print('CURRENT PUZZLE = ', current_puzzle)
+            print('\n=====================end loop===========================\n')
+            
+            # ALGO SENT BY DAVID
+            #
+            # for elem in generated_children:
+            #     # check if puzzle_state is inside open_list or inside closed_list
+            #     if elem[3] not in self.open_list and elem[3] != self.closed_list:
+            #         self.open_list = self.mergePQ(self.open_list, elem)
 
 
 

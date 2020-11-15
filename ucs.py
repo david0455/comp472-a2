@@ -66,10 +66,11 @@ class UniformCostSearch():
     
     def ucs(self, initial_state):
         print("entered ucs")
+        index = 0
+
         if len(initial_state) > 0:
             print("entered first if\n")
 
-            print('INITIAL STATE = ', initial_state)
             rl = Rules(initial_state)
             if rl.checkGoal(): #if initial state is equal to goal, end ucs
                 return print("Already at goal state") 
@@ -79,6 +80,12 @@ class UniformCostSearch():
 
             while not self.open_state.empty():
                 print("\nentered while loop")
+                print("=================================================================")
+                print("=================================================================")
+                print("==================      ", index, "      ========================")
+                print("=================================================================")
+                print("=================================================================")
+                index += 1
                 self.cost, self.moved_tile, self.move, self.temp_visited, self.path = self.open_state.get() #pop first element with lowest cost in priority queue
                 self.visited_state = self.temp_visited.copy() # copy of the list without reference
                 # apply goal function
@@ -89,39 +96,77 @@ class UniformCostSearch():
                 
                 self.closed_state.append(self.visited_state) #put visited state in closed state
                 self.possible_Moves = rl.generate_moves()
+                print('\n\npossible moves = ', self.possible_Moves.queue)
 
                 while not self.possible_Moves.empty():
                     self.child_cost, self.child_moved_tile, self.next_move, self.parent_state = self.possible_Moves.get()
-                    print('@@@@@@@@@@@@@@@@@@@visited state = ', self.visited_state)
-                    print('closed state = ', self.closed_state)
+                    print('\n\n\nvisited state = ', self.visited_state)
+                    print('\nclosed state = ', self.closed_state)
                     print()
+                    print('\ncurrent puzzle = ', rl.getPuzzle())
                     self.child_state = self.action_move(self.next_move, rl)
+                    print('\ncurrent puzzle = ', rl.getPuzzle())
                     
-                    print('after action_move VISITED STATE = ', self.visited_state)
+                    print('\n\nafter action_move VISITED STATE = ', self.visited_state)
                     print('\nOPEN STATE = ', self.open_state.queue)
                     print('\nCLOSED STATE = ', self.closed_state)
-                    print('closed type ', type(self.closed_state))
-                    print(self.closed_state[0])
 
                     print('\n\npossible moves = ', self.possible_Moves.queue)
-                    print("Child: ", self.child_state)
-                    print("Child type: ", type(self.child_state))
-
-                    if not np.array_equal(self.child_state, self.closed_state):
-                        print('\n\nchild not in closed\n\n')
-                    else:
-                        print('\n\nchild is in closed\n\n')
+                    print("\nChild: ", self.child_state)
 
                     if not np.array_equal(self.child_state, self.closed_state) and not (self.open_state.queue.count(self.child_state.tolist()) > 0):  # check if the child is in closed list or open priority queue
                         self.path.append((self.moved_tile, self.cost))
                         self.open_state.put([self.child_cost, self.child_moved_tile, self.next_move, self.child_state, self.path])
-                        print('\npossMove IF OPEN STATE = ', self.open_state.queue)
+                        print('\n\npossMove IF OPEN STATE = ', self.open_state.queue)
                     elif self.open_state: # if the child in priority queue has higher PATH-COST than this child, replace it
                         if self.compare_Cost(self.child_cost, self.child_state, self.open_state): 
                             self.open_state = self.replace_Cost(self.child_cost, self.child_state, self.open_state)
-                        print('\npossMove ELSE OPEN STATE = ', self.open_state.queue)
+                        print('\n\npossMove ELSE OPEN STATE = ', self.open_state.queue)
 
         return print("No Solution")
+
+    def ucs2(self, init_puzzle):
+        rl = Rules(init_puzzle)
+        self.open_state.put(rl.getPuzzle()) # put ROOT
+        self.visited_state.append(self.open_state.get()) # pop ROOT and VISIT
+        self.open_state = rl.generate_moves() # generate children of ROOT
+
+        while not self.open_state.empty():
+            if (rl.checkGoal):
+                print("\n\nWE ARE AT GOAL\n\n")
+                return rl.getPuzzle()
+
+            current_state = rl.getPuzzle()
+
+            visit = self.open_state.get() # get first/lowest cost child to visit
+            # (cost, nextValue, moveDirection, state_before the move AKA parent of child)
+            
+            if current_state == visit[3]: # the parent_state of generated child
+                print()
+                # apply the move()
+            
+            else:
+                print()
+                # switch current state to visit[3]
+                #  apply the move of new current
+
+            
+            #self.visited_state.append(lowest_child)     # on devrai meme pas avoir visited_state
+            self.closed_state.append(visit) # we visited this, so put into closed_state
+            self.action_move(lowest_child) # we truly visit that move aka move into that position/child of lowest cost
+
+            # once we moved, generate new children
+            new_children = rl.generate_moves() # generate new children after the move
+            self.open_state.put(new_children) # add new children to open_state
+
+            # loop should be finished here?
+            # re-start from top of loop to visit new lowest children...?
+            #
+            # but gotta check when we pop, if current state == the state of popped
+            # like if current state == popped's parent, then apply the move()
+            # else, if current state is not the pooped parent, then gotta switch current state to the popped parent
+
+#fodrai fix le pseudocode pour good ucs too...
 
 # def get_Start_State(puzzle_file):
 #     input_file = np.loadtxt(puzzle_file, delimiter=' ')
