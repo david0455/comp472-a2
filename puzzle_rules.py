@@ -1,5 +1,6 @@
 import numpy as np
 import queue as Q
+import copy
 
 class Rules(object):
 
@@ -50,7 +51,7 @@ class Rules(object):
         self.zero_pos = [temp_row, temp_col]
 
     def temp_swap(self, puzzle, current_pos, next_pos):
-        temp_puzzle = list(puzzle)
+        temp_puzzle = copy.deepcopy(puzzle)
         curr_row = current_pos[0]
         curr_col = current_pos[1]
 
@@ -68,13 +69,15 @@ class Rules(object):
 
     # Count the number of tiles out of place compared to goal
     def h1(self, puzzle):
-
-        h1_val = 0
-        for row in range(puzzle.shape[0]):
-            for col in range(puzzle.shape[1]):
-                if puzzle[row][col] != self.goal_1[row][col] or puzzle[row][col] != self.goal_2[row][col]:
-                    h1_val += 1
-        return h1_val
+        h1_val1 = 0
+        h1_val2 = 0
+        for row in range(len(self.puzzle) - 1):
+            for col in range(len(self.puzzle[0]) - 1):
+                if puzzle[row][col] != self.goal_1[row][col]:
+                    h1_val1 += 1
+                if puzzle[row][col] != self.goal_2[row][col]:
+                    h1_val2 += 1
+        return h1_val1 if h1_val1 < h1_val2 else h1_val2
 
     def h2(self):
         print()
@@ -106,6 +109,7 @@ class Rules(object):
 
         self.swap(self.puzzle, [row, col], [row - 1, col])
         self.total_cost += 1
+        print('\n===========Moved UP===========')
 
     def temp_moveUp(self, puzzle):
         row, col = self.zero_pos
@@ -133,12 +137,13 @@ class Rules(object):
 
         self.swap(self.puzzle, [row, col], [row + 1, col])
         self.total_cost += 1
+        print('\n===========Moved DOWN===========')
 
     def temp_moveDown(self, puzzle):
         row, col = self.zero_pos
 
         # If ZERO is at last row, then illegal
-        if row == puzzle.shape[0] - 1:
+        if row == len(self.puzzle) - 1:
             raise Exception('Illegal move -> cannot move DOWN')
 
         return self.temp_swap(puzzle, [row, col], [row + 1, col])
@@ -160,6 +165,7 @@ class Rules(object):
 
         self.swap(self.puzzle, [row, col], [row, col - 1])
         self.total_cost += 1
+        print('\n===========Moved LEFT===========')
 
     def temp_moveLeft(self, puzzle):
         row, col = self.zero_pos
@@ -186,11 +192,12 @@ class Rules(object):
 
         self.swap(self.puzzle, [row, col], [row, col + 1])
         self.total_cost += 1
+        print('\n===========Moved RIGHT===========')
 
     def temp_moveRight(self, puzzle):
         row, col = self.zero_pos
 
-        if col == 0:
+        if col == len(self.puzzle[0]) - 1:
             raise Exception('Illegal move -> cannot move RIGHT')
 
         return self.temp_swap(puzzle, [row, col], [row, col + 1])
@@ -215,13 +222,14 @@ class Rules(object):
         else:
             raise Exception('Illegal move -> cannot move WRAP')
         self.total_cost += 2
+        print('\n===========Moved WRAP===========')
 
     def temp_moveWrap(self, puzzle):
         row, col = self.zero_pos
 
-        if (row == 0 or row == puzzle.shape[0] - 1) and col == 0:
+        if (row == 0 or row == len(puzzle) - 1) and col == 0:
             return self.temp_swap(puzzle, [row, col], [row, -1])
-        elif (row == 0 or row == puzzle.shape[0] - 1) and col == puzzle.shape[1] - 1:
+        elif (row == 0 or row == len(puzzle) - 1) and col == len(puzzle[0]) - 1:
             return self.temp_swap(puzzle, [row, col], [row, 0])
         else:
             raise Exception('Illegal move -> cannot move WRAP')
@@ -251,13 +259,13 @@ class Rules(object):
         if row == 0 and col == 0:
             return self.temp_swap(puzzle, [row, col], [row + 1, col + 1])
         # Top Right Corner
-        elif row == 0 and col == puzzle.shape[1] - 1:
+        elif row == 0 and col == len(puzzle[0]) - 1:
             return self.temp_swap(puzzle, [row, col], [row + 1, col - 1])
         # Bottom Left Corner
-        elif row == puzzle.shape[0] - 1 and col == 0:
+        elif row == len(puzzle) - 1 and col == 0:
             return self.temp_swap(puzzle, [row, col], [row - 1, col + 1])
         # Bottom Right Corner
-        elif row == puzzle.shape[0] - 1 and col == puzzle.shape[1] - 1:
+        elif row == len(puzzle) - 1 and col == len(puzzle[0]) - 1:
             return self.temp_swap(puzzle, [row, col], [row - 1, col - 1])
         else:
             raise Exception('Illegal move -> cannot move DIAGONAL')
@@ -280,6 +288,7 @@ class Rules(object):
         else:
             raise Exception('Illegal move -> cannot move DIAGONAL')
         self.total_cost += 3
+        print('\n===========Moved DIAGONAL===========')
 
     def getDiagWrap(self):
         row, col = self.zero_pos
@@ -306,13 +315,13 @@ class Rules(object):
         if row == 0 and col == 0:
             return self.temp_swap(puzzle, [row, col], [-1, -1])
         # Top Right Corner
-        elif row == 0 and col == puzzle.shape[1] - 1:
+        elif row == 0 and col == len(puzzle[0]) - 1:
             return self.temp_swap(puzzle, [row, col], [-1, 0])
         # Bottom Left Corner
-        elif row == puzzle.shape[0] - 1 and col == 0:
+        elif row == len(puzzle) - 1 and col == 0:
             return self.temp_swap(puzzle, [row, col], [0, -1])
         # Bottom Right Corner
-        elif row == puzzle.shape[0] - 1 and col == puzzle.shape[1] - 1:
+        elif row == len(puzzle) - 1 and col == len(puzzle[0]) - 1:
             return self.temp_swap(puzzle, [row, col], [0, 0])
         else:
             raise Exception('Illegal move -> cannot move DIAGONAL WRAP')
@@ -335,9 +344,10 @@ class Rules(object):
         else:
             raise Exception('Illegal move -> cannot move DIAGONAL WRAP')
         self.total_cost += 3
+        print('\n===========Moved DIAG WRAP===========')
 
     # Generates the available moves
-    # Return a PriorityQueue with (cost, nextValue, nextMove, moveDirection)
+    # Return a PriorityQueue with (cost, nextValue, moveDirection, state_before the move AKA parent of child)
     def generate_moves(self):
         row, col = self.zero_pos
         pq = Q.PriorityQueue()
@@ -365,38 +375,46 @@ class Rules(object):
     def genMove_h1(self):
         row, col = self.zero_pos
         copy_puzzle = list(self.puzzle)
-        pq = Q.PriorityQueue()
+        arr = []
 
         if row != 0:
             testpuzzle, tempzero = self.temp_moveUp(copy_puzzle)
-            pq.put((self.h1(testpuzzle), self.getUp(), 'up', testpuzzle))
+            #pq.put((self.h1(testpuzzle), self.getUp(), 'up', child_state_puzzle))
+            arr.append([self.h1(testpuzzle), self.getUp(), 'up', testpuzzle])
             
         if row != self.puzzle.shape[0] - 1 :
             testpuzzle, tempzero = self.temp_moveDown(copy_puzzle)
-            pq.put((self.h1(testpuzzle), self.getDown(), 'down', testpuzzle))
+            #pq.put((self.h1(testpuzzle), self.getDown(), 'down', testpuzzle))
+            arr.append([self.h1(testpuzzle), self.getDown(), 'down', testpuzzle])
 
         if col != 0:
             testpuzzle, tempzero = self.temp_moveLeft(copy_puzzle)
-            pq.put((self.h1(testpuzzle), self.getLeft(), 'left', testpuzzle))
+            #pq.put((self.h1(testpuzzle), self.getLeft(), 'left', testpuzzle))
+            arr.append([self.h1(testpuzzle), self.getLeft(), 'left', testpuzzle])
 
         if col != self.puzzle.shape[1] - 1:
             testpuzzle, tempzero = self.temp_moveRight(copy_puzzle)
-            pq.put((self.h1(testpuzzle), self.getRight(), 'right', testpuzzle))
+            #pq.put((self.h1(testpuzzle), self.getRight(), 'right', testpuzzle))
+            arr.append([self.h1(testpuzzle), self.getRight(), 'right', testpuzzle])
 
         if ((row == 0 and col == 0)
         or (row == 0 and col == self.puzzle.shape[1] - 1)
         or (row == self.puzzle.shape[0] - 1 and col == 0)
         or (row == self.puzzle.shape[0] - 1 and col == self.puzzle.shape[1] - 1)):
             testpuzzle, tempzero = self.temp_moveWrap(copy_puzzle)
-            pq.put((self.h1(testpuzzle), self.getWrap(), 'wrap', testpuzzle))
+            #pq.put((self.h1(testpuzzle), self.getWrap(), 'wrap', testpuzzle))
+            arr.append([self.h1(testpuzzle), self.getWrap(), 'wrap', testpuzzle])
 
             testpuzzle, tempzero = self.temp_moveDiagonal(copy_puzzle)
-            pq.put((self.h1(testpuzzle), self.getDiagonal(), 'diagonal', self.puzzle))
+            #pq.put((self.h1(testpuzzle), self.getDiagonal(), 'diagonal', self.puzzle))
+            arr.append([self.h1(testpuzzle), self.getDiagonal(), 'diagonal', self.puzzle])
 
             testpuzzle, tempzero = self.temp_moveDiagWrap(copy_puzzle)
-            pq.put((self.h1(testpuzzle), self.getDiagWrap(), 'diagwrap', self.puzzle))
+            #pq.put((self.h1(testpuzzle), self.getDiagWrap(), 'diagwrap', self.puzzle))
+            arr.append([self.h1(testpuzzle), self.getDiagWrap(), 'diagwrap', self.puzzle])
         
-        return pq
+        #return pq
+        return arr
 
     # TODO: NOT DONE / CORRECT
     def checkGoal(self):
