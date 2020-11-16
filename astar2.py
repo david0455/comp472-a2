@@ -12,7 +12,7 @@ class AStar():
         self.start_state = []
         self.visited_state = []
         self.closed_state = []  # list of visited states
-        self.open_state = Q.PriorityQueue()  # priority queue ordered by total cost
+        self.open_state = []   # priority queue ordered by total cost
 
     # If the last tile of current puzzle state is not equal to zero, h(n) = 1
     def h0(self, current_puzzle_state):
@@ -30,13 +30,13 @@ class AStar():
         inside = False
         for i in range(len(state)):
             for j in range(len(state)):
-                if(elem == state[i][j]).all():
+                if(elem == state[i][j]):
                     inside = True
         return inside
     
     def compare_Cost(self, child_cost, child_state, pq):
-        if len(pq.queue) != 0:
-            for cost in pq.queue:
+        if len(pq) != 0:
+            for cost in pq:
                 if child_state == cost[3]: # get puzzle state in list
                     if child_cost < cost[0]: # get cost value in list
                         return True
@@ -44,8 +44,8 @@ class AStar():
                         return False
 
     def replace_Cost(self, child_cost, child_state, pq):
-        if len(pq.queue) != 0:
-            for cost in pq.queue:
+        if len(pq) != 0:
+            for cost in pq:
                 if child_state == cost[3]: # get puzzle state in list
                     if child_cost < cost[0]: # get cost value in list
                         cost[0] = child_cost
@@ -75,8 +75,8 @@ class AStar():
 
     # Finds the coordinates of the 0 tile
     def find_zero(self, current_puzzle_state):
-        for row in range(current_puzzle_state.shape[0]):
-            for col in range(current_puzzle_state.shape[1]):
+        for row in range(len(current_puzzle_state)):
+            for col in range(len(current_puzzle_state[0])):
                 if current_puzzle_state[row][col] == 0:
                     return row, col
     
@@ -100,7 +100,7 @@ class AStar():
     def getDown(self, current_puzzle_state):
         row, col = self.find_zero(current_puzzle_state)
     
-        if row == current_puzzle_state.shape[0] - 1:
+        if row ==  len(current_puzzle_state) - 1:
             raise Exception('Illegal move -> cannot get DOWN')
     
         return current_puzzle_state[row+1][col]
@@ -109,7 +109,7 @@ class AStar():
         row, col = self.find_zero(current_puzzle_state)
     
         # If ZERO is at last row, then illegal
-        if row == current_puzzle_state.shape[0] - 1:
+        if row == len(current_puzzle_state) - 1:
             raise Exception('Illegal move -> cannot move DOWN')
     
         self.new_state = self.new_state = self.swap(
@@ -139,7 +139,7 @@ class AStar():
     def getRight(self, current_puzzle_state):
         row, col = self.find_zero(current_puzzle_state)
     
-        if col == current_puzzle_state.shape[1] - 1:
+        if col == len(current_puzzle_state[0]) - 1:
             raise Exception('Illegal move -> cannot get RIGHT')
     
         return current_puzzle_state[row][col+1]
@@ -148,7 +148,7 @@ class AStar():
         row, col = self.find_zero(current_puzzle_state)
     
         # If ZERO is at last column, then illegal
-        if col == current_puzzle_state.shape[1] - 1:
+        if col == len(current_puzzle_state[0]) - 1:
             raise Exception('Illegal move -> cannot move RIGHT')
     
         self.new_state = self.swap(current_puzzle_state, [row, col], [row, col + 1])
@@ -158,9 +158,9 @@ class AStar():
     def getWrap(self, current_puzzle_state):
         row, col = self.find_zero(current_puzzle_state)
     
-        if (row == 0 or row == current_puzzle_state.shape[0] - 1) and col == 0:
+        if (row == 0 or row == len(current_puzzle_state) - 1) and col == 0:
             return current_puzzle_state[row][-1]
-        elif (row == 0 or row == current_puzzle_state.shape[0] - 1) and col == current_puzzle_state.shape[1] - 1:
+        elif (row == 0 or row == len(current_puzzle_state) - 1) and col == len(current_puzzle_state[0]) - 1:
             return current_puzzle_state[row][0]
         else:
             raise Exception('Illegal move -> cannot get WRAP')
@@ -168,9 +168,9 @@ class AStar():
     def moveWrap(self, current_puzzle_state):
         row, col = self.find_zero(current_puzzle_state)
     
-        if (row == 0 or row == current_puzzle_state.shape[0] - 1) and col == 0:
+        if (row == 0 or row == len(current_puzzle_state) - 1) and col == 0:
             self.new_state = self.swap(current_puzzle_state, [row, col], [row, -1])
-        elif (row == 0 or row == current_puzzle_state.shape[0] - 1) and col == current_puzzle_state.shape[1] - 1:
+        elif (row == 0 or row == len(current_puzzle_state) - 1) and col == len(current_puzzle_state[0]) - 1:
             self.new_state = self.swap(current_puzzle_state, [row, col], [row, 0])
         else:
             raise Exception('Illegal move -> cannot move WRAP')
@@ -183,13 +183,13 @@ class AStar():
         if row == 0 and col == 0:
             return current_puzzle_state[row+1][col+1]
         # Top Right Corner
-        elif row == 0 and col == current_puzzle_state.shape[1] - 1:
+        elif row == 0 and col == len(current_puzzle_state[0]) - 1:
             return current_puzzle_state[row+1][col-1]
         # Bottom Left Corner
-        elif row == current_puzzle_state.shape[0] - 1 and col == 0:
+        elif row == len(current_puzzle_state) - 1 and col == 0:
             return current_puzzle_state[row-1][col+1]
         # Bottom Right Corner
-        elif row == current_puzzle_state.shape[0] - 1 and col == current_puzzle_state.shape[1] - 1:
+        elif row == len(current_puzzle_state) - 1 and col == len(current_puzzle_state[0]) - 1:
             return current_puzzle_state[row-1][col-1]
         else:
             raise Exception('Illegal move -> cannot get DIAGONAL')
@@ -201,13 +201,13 @@ class AStar():
         if row == 0 and col == 0:
             self.new_state = self.swap(current_puzzle_state, [row, col], [row + 1, col + 1])
         # Top Right Corner
-        elif row == 0 and col == current_puzzle_state.shape[1] - 1:
+        elif row == 0 and col == len(current_puzzle_state[0]) - 1:
             self.new_state = self.swap(current_puzzle_state, [row, col], [row + 1, col - 1])
         # Bottom Left Corner
-        elif row == current_puzzle_state.shape[0] - 1 and col == 0:
+        elif row == len(current_puzzle_state) - 1 and col == 0:
             self.new_state = self.swap(current_puzzle_state, [row, col], [row - 1, col + 1])
         # Bottom Right Corner
-        elif row == current_puzzle_state.shape[0] - 1 and col == current_puzzle_state.shape[1] - 1:
+        elif row == len(current_puzzle_state) - 1 and col == len(current_puzzle_state[0]) - 1:
             self.new_state = self.swap(current_puzzle_state, [row, col], [row - 1, col - 1])
         else:
             raise Exception('Illegal move -> cannot move DIAGONAL')
@@ -220,13 +220,13 @@ class AStar():
         if row == 0 and col == 0:
             return current_puzzle_state[-1][-1]
         # Top Right Corner
-        elif row == 0 and col == current_puzzle_state.shape[1] - 1:
+        elif row == 0 and col == len(current_puzzle_state[0]) - 1:
             return current_puzzle_state[-1][0]
         # Bottom Left Corner
-        elif row == current_puzzle_state.shape[0] - 1 and col == 0:
+        elif row == len(current_puzzle_state) - 1 and col == 0:
             return current_puzzle_state[0][-1]
         # Bottom Right Corner
-        elif row == current_puzzle_state.shape[0] - 1 and col == current_puzzle_state.shape[1] - 1:
+        elif row == len(current_puzzle_state) - 1 and col == len(current_puzzle_state[0]) - 1:
             return current_puzzle_state[0][0]
         else:
             raise Exception('Illegal move -> cannot get DIAGONAL WRAP')
@@ -238,13 +238,13 @@ class AStar():
         if row == 0 and col == 0:
             self.new_state = self.swap(current_puzzle_state, [row, col], [-1, -1])
         # Top Right Corner
-        elif row == 0 and col == current_puzzle_state.shape[1] - 1:
+        elif row == 0 and col == len(current_puzzle_state[0]) - 1:
             self.new_state = self.swap(current_puzzle_state, [row, col], [-1, 0])
         # Bottom Left Corner
-        elif row == current_puzzle_state.shape[0] - 1 and col == 0:
+        elif row == len(current_puzzle_state) - 1 and col == 0:
             self.new_state = self.swap(current_puzzle_state, [row, col], [0, -1])
         # Bottom Right Corner
-        elif row == current_puzzle_state.shape[0] - 1 and col == current_puzzle_state.shape[1] - 1:
+        elif row == len(current_puzzle_state) - 1 and col == len(current_puzzle_state[0]) - 1:
             self.new_state = self.swap(current_puzzle_state, [row, col], [0, 0])
         else:
             raise Exception('Illegal move -> cannot move DIAGONAL WRAP')
@@ -276,17 +276,17 @@ class AStar():
     
         if row != 0:
             children.put((1, self.getUp(current_puzzle_state), self.moveUp(copy_puzzle)))
-        if row != current_puzzle_state.shape[0] - 1:
+        if row != len(current_puzzle_state) - 1:
             children.put((1, self.getDown(current_puzzle_state), self.moveDown(copy_puzzle)))
         if col != 0:
             children.put((1, self.getLeft(current_puzzle_state), self.moveLeft(copy_puzzle)))
-        if col != current_puzzle_state.shape[1] - 1:
+        if col != len(current_puzzle_state[0]) - 1:
             children.put((1, self.getRight(current_puzzle_state), self.moveRight(copy_puzzle)))
     
         if ((row == 0 and col == 0)
-        or (row == 0 and col == current_puzzle_state.shape[1] - 1)
-        or (row == current_puzzle_state.shape[0] - 1 and col == 0)
-        or (row == current_puzzle_state.shape[0] - 1 and col == current_puzzle_state.shape[1] - 1)):
+        or (row == 0 and col == len(current_puzzle_state[0]) - 1)
+        or (row == len(current_puzzle_state) - 1 and col == 0)
+        or (row == len(current_puzzle_state) - 1 and col == len(current_puzzle_state[0]) - 1)):
             children.put((2, self.getWrap(current_puzzle_state), self.moveWrap(copy_puzzle)))
             children.put((3, self.getDiagonal(current_puzzle_state), self.moveDiagonal(copy_puzzle)))
             children.put((3, self.getDiagWrap(current_puzzle_state), self.moveDiagWrap(copy_puzzle)))
@@ -294,12 +294,16 @@ class AStar():
 
     def astar(self, initial_state):
         self.start = time.time()
-        print("entered astar")
-        self.open_state.put([self.h0(initial_state), 0, self.h0(initial_state), initial_state, list([0, self.h0(initial_state), initial_state])]) # initial-state: (f(n), g(n), h(n), curr _puzzle = Starting Puzzle, Path = [tile,cost, current_puzzle])  
+        print("entered astar") 
+        #self.open_state.append([self.h0(initial_state), 0, self.h0(initial_state), initial_state, list([0, self.h0(initial_state), initial_state])]) # initial-state: (f(n), g(n), h(n), curr _puzzle = Starting Puzzle, Path = [tile,cost, current_puzzle])  
+        self.open_state.append([self.h0(initial_state), 0, self.h0(initial_state), initial_state]) # initial-state: (f(n), g(n), h(n), curr _puzzle = Starting Puzzle, Path = [tile,cost, current_puzzle])
         
-        while not self.open_state.empty():
+        
+        while len(self.open_state) > 0:
             print("entered first while loop")
-            self.curr_f, self.curr_g, self.curr_h, self.current_puzzle, self.path = self.open_state.get() # pop lowest cost move from open queue
+            self.open_state.sort(key=lambda x: x[0])
+            # self.curr_f, self.curr_g, self.curr_h, self.current_puzzle, self.path = self.open_state.pop(0) # pop lowest cost move from open queue
+            self.curr_f, self.curr_g, self.curr_h, self.current_puzzle = self.open_state.pop(0) # pop lowest cost move from open queue
 
             if self.check_goal(self.current_puzzle): # Check if current puzzle state is goal state
                 self.end = time.time()
@@ -308,34 +312,36 @@ class AStar():
                 return print("Solution found in", execution_time, "sec")
             
             self.children = self.generate_children(self.current_puzzle) # generate possible successors from current puzzle state
-            print("\n children:", self.children.queue)
+            #print("\n children:", self.children.queue)
             if(len(self.children.queue) > 0 ):
                 for self.child in self.children.queue[:]:
                     print("entered children loop")
                     self.child_path_cost, self.child_moved_tile, self.child_puzzle_state = self.children.get()
 
-                    print("\nchild:", self.child_path_cost, self.child_moved_tile, self.child_puzzle_state)
+                    #print("\nchild:", self.child_path_cost, self.child_moved_tile, self.child_puzzle_state)
                     # Calculate each cost
                     child_h = self.h0(self.child_puzzle_state)
                     total_cost = self.get_path_cost(self.child_path_cost, self.curr_g) 
                     child_f = self.calc_f(total_cost, child_h)
-
-                    if self.is_in(self.child_puzzle_state, self.open_state.queue): # check if child is in open_state
+                    
+                    if (self.child_puzzle_state in (item for sublist in self.open_state for item in sublist)): # check if child is in open_state
                         if self.compare_Cost(child_f, self.child_puzzle_state, self.open_state):  # if child_f is lower than the cost inside open_state, replace it
                             print("entered compare cost open_state")
                             self.open_state = self.replace_Cost(child_f, self.child_puzzle_state, self.open_state)
 
-                    elif self.is_in(self.child_puzzle_state, self.closed_state): # check if child is in closed list
+                    elif (self.child_puzzle_state in (item for sublist in self.closed_state for item in sublist)): # check if child is in closed list
                         print("entered compare cost closed_state")
                         if self.compare_Cost(child_f, self.child_puzzle_state, self.open_state):  # if child_f is lower than the cost inside closed list, put it back to open_state
-                            self.path.append([self.child_moved_tile, child_f, self.child_puzzle_state])
-                            self.open_state.put([child_f, total_cost, child_h, self.child_puzzle_state, self.path])
+                            #self.path.append([self.child_moved_tile, child_f, self.child_puzzle_state])
+                            #self.open_state.append([child_f, total_cost, child_h, self.child_puzzle_state, self.path])
+                            self.open_state.append([child_f, total_cost, child_h, self.child_puzzle_state])
 
                     else:
-                        print("\n open_state before put", self.open_state.queue)
-                        self.path.append([self.child_moved_tile, child_f, self.child_puzzle_state])
-                        self.open_state.put([child_f, total_cost, child_h, self.child_puzzle_state, self.path])
-                        print("\n open_state after put", self.open_state.queue)
+                        #print("\n open_state before put", self.open_state)
+                        #self.path.append([self.child_moved_tile, child_f, self.child_puzzle_state])
+                        #self.open_state.append([child_f, total_cost, child_h, self.child_puzzle_state, self.path])
+                        self.open_state.append([child_f, total_cost, child_h, self.child_puzzle_state])
+                        #print("\n open_state after put", self.open_state)
             
             self.closed_state.append([self.curr_f, self.curr_g, self.curr_h, self.current_puzzle])
         
@@ -351,7 +357,7 @@ def get_Start_State(puzzle_file):
 def main():
     initial_States = get_Start_State("samplePuzzles.txt")
     solve = AStar()
-    solve.astar(initial_States[0])
+    solve.astar(initial_States[0].tolist())
 
 if __name__ == '__main__':
     main()
