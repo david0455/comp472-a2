@@ -1,6 +1,7 @@
 import queue as Q
 import numpy as np
 import pandas as pd
+import time
 from puzzle_rules import Rules
 
 
@@ -75,6 +76,7 @@ class GreedyBFS():
         return inside
 
     def gbfs(self, init_puzzle):
+        start = time.time()
         rl = Rules(init_puzzle)
         if rl.checkGoal(): #if initial state is equal to goal, end ucs
             return print("Already at goal state") 
@@ -83,13 +85,12 @@ class GreedyBFS():
         # TODO: path needs to be chanegd, now is [h=0, tile=0, puzzle]
         self.open_list.append([0, 0, None, copy_puzzle, list([0, 0, copy_puzzle])])
 
-        i = 0
         while len(self.open_list) > 0:
-            print('========================\ni = ', i)
-            i += 1
-            print('\n\n')
             if rl.checkGoal(): #if initial state is equal to goal, end ucs
-                return print("Already at goal state")
+                end = time.time()
+                execution_time = end - start
+                self.closed_list.append((rl.getPuzzle()))
+                return print("Solution found in", execution_time, "sec", rl.getPuzzle())
 
             self.open_list.sort(key=lambda x: x[0])
             h_cost, next_tile, next_move, current_puzzle, path = self.open_list.pop(0)
