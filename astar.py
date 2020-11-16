@@ -119,7 +119,7 @@ def get_Start_State(puzzle_file):
 def main():
     initial_States = get_Start_State("samplePuzzles.txt")
     solve = AStar()
-    for i in range(initial_States):
+    for i in range(len(initial_States)):
         #solve.astar(initial_States[i].tolist())
         solve.astar(initial_States[0].tolist())
 
