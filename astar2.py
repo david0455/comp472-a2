@@ -294,28 +294,28 @@ class AStar():
 
     def astar(self, initial_state):
         self.start = time.time()
-        print("entered astar") 
-        #self.open_state.append([self.h0(initial_state), 0, self.h0(initial_state), initial_state, list([0, self.h0(initial_state), initial_state])]) # initial-state: (f(n), g(n), h(n), curr _puzzle = Starting Puzzle, Path = [tile,cost, current_puzzle])  
-        self.open_state.append([self.h0(initial_state), 0, self.h0(initial_state), initial_state]) # initial-state: (f(n), g(n), h(n), curr _puzzle = Starting Puzzle, Path = [tile,cost, current_puzzle])
+        #print("entered astar") 
+        self.open_state.append([self.h0(initial_state), 0, self.h0(initial_state), initial_state, list([0, self.h0(initial_state), initial_state])]) # initial-state: (f(n), g(n), h(n), curr _puzzle = Starting Puzzle, Path = [tile,cost, current_puzzle])  
+        #self.open_state.append([self.h0(initial_state), 0, self.h0(initial_state), initial_state]) # initial-state: (f(n), g(n), h(n), curr _puzzle = Starting Puzzle, Path = [tile,cost, current_puzzle])
         
         
         while len(self.open_state) > 0:
-            print("entered first while loop")
+            #print("entered first while loop")
             self.open_state.sort(key=lambda x: x[0])
-            # self.curr_f, self.curr_g, self.curr_h, self.current_puzzle, self.path = self.open_state.pop(0) # pop lowest cost move from open queue
-            self.curr_f, self.curr_g, self.curr_h, self.current_puzzle = self.open_state.pop(0) # pop lowest cost move from open queue
+            self.curr_f, self.curr_g, self.curr_h, self.current_puzzle, self.path = self.open_state.pop(0) # pop lowest cost move from open queue
+            #self.curr_f, self.curr_g, self.curr_h, self.current_puzzle = self.open_state.pop(0) # pop lowest cost move from open queue
 
             if self.check_goal(self.current_puzzle): # Check if current puzzle state is goal state
                 self.end = time.time()
                 execution_time = self.end - self.start
                 self.closed_state.append((self.current_puzzle))
-                return print("Solution found in", execution_time, "sec")
+                return print("Solution found in", execution_time, "sec", self.current_puzzle)
             
             self.children = self.generate_children(self.current_puzzle) # generate possible successors from current puzzle state
             #print("\n children:", self.children.queue)
             if(len(self.children.queue) > 0 ):
                 for self.child in self.children.queue[:]:
-                    print("entered children loop")
+                    #print("entered children loop")
                     self.child_path_cost, self.child_moved_tile, self.child_puzzle_state = self.children.get()
 
                     #print("\nchild:", self.child_path_cost, self.child_moved_tile, self.child_puzzle_state)
@@ -326,21 +326,21 @@ class AStar():
                     
                     if (self.child_puzzle_state in (item for sublist in self.open_state for item in sublist)): # check if child is in open_state
                         if self.compare_Cost(child_f, self.child_puzzle_state, self.open_state):  # if child_f is lower than the cost inside open_state, replace it
-                            print("entered compare cost open_state")
+                           # print("entered compare cost open_state")
                             self.open_state = self.replace_Cost(child_f, self.child_puzzle_state, self.open_state)
 
                     elif (self.child_puzzle_state in (item for sublist in self.closed_state for item in sublist)): # check if child is in closed list
-                        print("entered compare cost closed_state")
+                        #print("entered compare cost closed_state")
                         if self.compare_Cost(child_f, self.child_puzzle_state, self.open_state):  # if child_f is lower than the cost inside closed list, put it back to open_state
-                            #self.path.append([self.child_moved_tile, child_f, self.child_puzzle_state])
-                            #self.open_state.append([child_f, total_cost, child_h, self.child_puzzle_state, self.path])
-                            self.open_state.append([child_f, total_cost, child_h, self.child_puzzle_state])
+                            self.path.append([self.child_moved_tile, child_f, self.child_puzzle_state])
+                            self.open_state.append([child_f, total_cost, child_h, self.child_puzzle_state, self.path])
+                            # self.open_state.append([child_f, total_cost, child_h, self.child_puzzle_state])
 
                     else:
                         #print("\n open_state before put", self.open_state)
-                        #self.path.append([self.child_moved_tile, child_f, self.child_puzzle_state])
-                        #self.open_state.append([child_f, total_cost, child_h, self.child_puzzle_state, self.path])
-                        self.open_state.append([child_f, total_cost, child_h, self.child_puzzle_state])
+                        self.path.append([self.child_moved_tile, child_f, self.child_puzzle_state])
+                        self.open_state.append([child_f, total_cost, child_h, self.child_puzzle_state, self.path])
+                        #self.open_state.append([child_f, total_cost, child_h, self.child_puzzle_state])
                         #print("\n open_state after put", self.open_state)
             
             self.closed_state.append([self.curr_f, self.curr_g, self.curr_h, self.current_puzzle])
