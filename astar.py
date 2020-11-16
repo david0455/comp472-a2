@@ -5,22 +5,13 @@ import time
 import copy
 
 
-from puzzle_r import check_goal, generate_children
+from puzzle_r import check_goal, generate_children, h0
 
 class AStar():
 
     def __init__(self):
         self.closed_state = []  # list of visited states
         self.open_state = []   # priority queue ordered by total cost
-
-    # If the last tile of current puzzle state is not equal to zero, h(n) = 1
-    def h0(self, current_puzzle_state):
-        # current_puzzle_state[1][3] = Row 2 Col 4
-        if(current_puzzle_state[1][3] == 0):
-            self.h = 0
-        else:
-            self.h = 1
-        return self.h
 
     
     def compare_Cost(self, child_cost, child_state, pq):
@@ -52,15 +43,12 @@ class AStar():
 
     def astar(self, initial_state):
         start = time.time()
-        
-        self.open_state.append([self.h0(initial_state), 0, self.h0(initial_state), initial_state, list([0, self.h0(initial_state), initial_state])]) # initial-state: (f(n), g(n), h(n), curr _puzzle = Starting Puzzle, Path = [tile,cost, current_puzzle])  
-        # self.open_state.append([self.h0(initial_state), 0, self.h0(initial_state), initial_state]) # initial-state: (f(n), g(n), h(n), curr _puzzle = Starting Puzzle, Path = [tile,cost, current_puzzle])
-        
+        # initial-state: (f(n), g(n), h(n), curr _puzzle = Starting Puzzle, Path = [tile,cost, current_puzzle])  
+        self.open_state.append([h0(initial_state), 0, h0(initial_state), initial_state, list([0, h0(initial_state), initial_state])]) 
         while (len(self.open_state) > 0):
 
             self.open_state.sort(key=lambda x: x[0])
             self.curr_f, self.curr_g, self.curr_h, self.current_puzzle, self.path = self.open_state.pop(0) # pop lowest cost move from open queue
-            #self.curr_f, self.curr_g, self.curr_h, self.current_puzzle = self.open_state.pop(0) # pop lowest cost move from open queue
 
             if check_goal(self.current_puzzle): # Check if current puzzle state is goal state
                 end = time.time()
@@ -75,7 +63,7 @@ class AStar():
 
                     self.child_path_cost, self.child_moved_tile, self.child_puzzle_state = self.children.get()
                     # Calculate each cost
-                    child_h = self.h0(self.child_puzzle_state)
+                    child_h = h0(self.child_puzzle_state)
                     total_cost = self.get_path_cost(self.child_path_cost, self.curr_g) 
                     child_f = self.calc_f(total_cost, child_h)
                     
@@ -87,12 +75,10 @@ class AStar():
                         if self.compare_Cost(child_f, self.child_puzzle_state, self.open_state):  # if child_f is lower than the cost inside closed list, put it back to open_state
                             self.path.append([self.child_moved_tile, child_f, self.child_puzzle_state])
                             self.open_state.append([child_f, total_cost, child_h, self.child_puzzle_state, self.path])
-                            # self.open_state.append([child_f, total_cost, child_h, self.child_puzzle_state])
 
                     else:
                         self.path.append([self.child_moved_tile, child_f, self.child_puzzle_state])
                         self.open_state.append([child_f, total_cost, child_h, self.child_puzzle_state, self.path])
-                        #self.open_state.append([child_f, total_cost, child_h, self.child_puzzle_state])
             
             self.closed_state.append([self.curr_f, self.curr_g, self.curr_h, self.current_puzzle])
             temp_time = time.time()
