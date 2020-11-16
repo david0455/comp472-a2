@@ -7,11 +7,9 @@ from puzzle_rules import Rules
 class GreedyBFS():
 
     def __init__(self):
-        self.start_state = []
         self.visited_state = []
         self.closed_list = []  # list of visited states
-        self.open_list = Q.PriorityQueue()  # priority queue ordered by total cost
-        self.openArr = [] # use this to compare instead of PQ
+        self.open_list = []  # priority queue ordered by total cost
 
     def get_PQ_Content(self, pq):
         self.content = []
@@ -82,53 +80,31 @@ class GreedyBFS():
             return print("Already at goal state") 
 
         copy_puzzle = list(init_puzzle)
-        self.open_list.put([0, 0, None, copy_puzzle]) # TODO: dafuq u do with this path
+        # TODO: path needs to be chanegd, now is [h=0, tile=0, puzzle]
+        self.open_list.append([0, 0, None, copy_puzzle, list([0, 0, copy_puzzle])])
 
         i = 0
-        while not self.open_list.empty():
+        while len(self.open_list) > 0:
             print('========================\ni = ', i)
             i += 1
             print('\n\n')
             if rl.checkGoal(): #if initial state is equal to goal, end ucs
                 return print("Already at goal state")
 
-            temp_open = self.open_list.get()
-            heuristic_child = temp_open[0]
-            self.openarr = list(self.open_list.queue) # copying PQ to List
+            self.open_list.sort(key=lambda x: x[0])
+            h_cost, next_tile, next_move, current_puzzle, path = self.open_list.pop(0)
 
-            self.visited_state = temp_open[3]
+            self.visited_state.append(current_puzzle)
             self.closed_list.append(self.visited_state)
-            print('\nclosed = ', self.closed_list)
-            print('open = ', self.open_list.queue)
-            print('visited = ', self.visited_state)
+            children = rl.genMove_h1()
 
-            if i > 0:
-                current_state = self.action_move(temp_open[2], rl)
-                print('\ncurrent state = ', current_state)
+            if len(children.queue) > 0:
+                for child in children.queue[:]:
+                    child_hcost, child_tile, child_move, child_state = children.get()
 
-            generated_children = rl.genMove_h1() # [self.h1(testpuzzle), self.getLeft(), 'left', testpuzzle]
-            print('\ngen children = ', generated_children)
-
-            for item in generated_children:
-                print('\n----------child ', item)
-                print('child[3] = ', item[3])
-                print('closed ', self.closed_list)
-                print('openArr ', self.openArr)
-                print()
-                heuristic, nextTile, nextMove, nextChild = item
-
-                if self.open_list.empty() or item not in self.openArr:
-                    if not self.is_in(item[3], self.closed_list):
-                        print('\nINSIDE IF===================')
-                        print('PUTTING INSIDE OPEN LIST\n')
-                        self.open_list.put([heuristic, nextTile, nextMove, nextChild])
-                        self.openArr.append([heuristic, nextTile, nextMove, nextChild])
-                else:
-                    print('\nELSE!!!!!!!!!!!!!!')
-             
-            
-
-
+                    if not (child_state in (item for sublist in self.open_list for item in sublist)):
+                        path.append([child_hcost, child_tile, child_state])
+                        self.open_list.append([child_hcost, child_tile, child_move, child_state, path])
 
 def main():
     input_file = np.loadtxt("samplePuzzles.txt", delimiter=' ')
@@ -138,7 +114,7 @@ def main():
     third_puzzle = input_file[2].reshape(2,4)
 
     solve = GreedyBFS()
-    solve.gbfs(first_puzzle)
+    solve.gbfs(first_puzzle.tolist())
 
 if __name__ == '__main__':
     main()

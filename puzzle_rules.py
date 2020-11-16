@@ -15,11 +15,11 @@ class Rules(object):
         self.puzzle = puzzle
         self.zero_pos = self.find()
 
-        self.goal_1 = [[1, 2, 3, 4],
-                  [5, 6, 7, 0]]
+        self.goal_1 = np.array([[1, 2, 3, 4],
+                                [5, 6, 7, 0]])
 
-        self.goal_2 = [[1, 3, 5, 7],
-                  [2, 4, 6, 0]]
+        self.goal_2 = np.array([[1, 3, 5, 7],
+                                [2, 4, 6, 0]])
 
     def getPuzzle(self):
         return self.puzzle
@@ -30,8 +30,8 @@ class Rules(object):
     # TODO: np.where() could be better?
     # Finds the coordinates of the 0 tile
     def find(self):
-        for row in range(self.puzzle.shape[0]):
-            for col in range(self.puzzle.shape[1]):
+        for row in range(len(self.puzzle)):
+            for col in range(len(self.puzzle[0])):
                 if self.puzzle[row][col] == 0:
                     return row, col
 
@@ -71,8 +71,8 @@ class Rules(object):
     def h1(self, puzzle):
         h1_val1 = 0
         h1_val2 = 0
-        for row in range(len(self.puzzle) - 1):
-            for col in range(len(self.puzzle[0]) - 1):
+        for row in range(len(self.puzzle)):
+            for col in range(len(self.puzzle[0])):
                 if puzzle[row][col] != self.goal_1[row][col]:
                     h1_val1 += 1
                 if puzzle[row][col] != self.goal_2[row][col]:
@@ -85,9 +85,9 @@ class Rules(object):
 
     ##################################################################
     ##################################################################
-    #######     total row == self.puzzle.shape[0] - 1     for 0 ~ n-1
+    #######     total row == len(self.puzzle) - 1     for 0 ~ n-1
     #######                  len(self.puzzle) - 1
-    #######     total col == self.puzzle.shape[1] - 1  for 0 ~ n-1
+    #######     total col == len(self.puzzle[0]) - 1  for 0 ~ n-1
     #######                  len(self.puzzle[0]) - 1
     ##################################################################
     ##################################################################
@@ -123,7 +123,7 @@ class Rules(object):
     def getDown(self):
         row, col = self.zero_pos
 
-        if row == self.puzzle.shape[0] - 1:
+        if row == len(self.puzzle) - 1:
             raise Exception('Illegal move -> cannot get DOWN')
 
         return self.puzzle[row+1][col]
@@ -132,7 +132,7 @@ class Rules(object):
         row, col = self.zero_pos
 
         # If ZERO is at last row, then illegal
-        if row == self.puzzle.shape[0] - 1:
+        if row == len(self.puzzle) - 1:
             raise Exception('Illegal move -> cannot move DOWN')
 
         self.swap(self.puzzle, [row, col], [row + 1, col])
@@ -178,7 +178,7 @@ class Rules(object):
     def getRight(self):
         row, col = self.zero_pos
 
-        if col == self.puzzle.shape[1] - 1:
+        if col == len(self.puzzle[0]) - 1:
             raise Exception('Illegal move -> cannot get RIGHT')
 
         return self.puzzle[row][col+1]
@@ -187,7 +187,7 @@ class Rules(object):
         row, col = self.zero_pos
 
         # If ZERO is at last column, then illegal
-        if col == self.puzzle.shape[1] - 1:
+        if col == len(self.puzzle[0]) - 1:
             raise Exception('Illegal move -> cannot move RIGHT')
 
         self.swap(self.puzzle, [row, col], [row, col + 1])
@@ -205,9 +205,9 @@ class Rules(object):
     def getWrap(self):
         row, col = self.zero_pos
 
-        if (row == 0 or row == self.puzzle.shape[0] - 1) and col == 0:
+        if (row == 0 or row == len(self.puzzle) - 1) and col == 0:
             return self.puzzle[row][-1]
-        elif (row == 0 or row == self.puzzle.shape[0] - 1) and col == self.puzzle.shape[1] - 1:
+        elif (row == 0 or row == len(self.puzzle) - 1) and col == len(self.puzzle[0]) - 1:
             return self.puzzle[row][0]
         else:
             raise Exception('Illegal move -> cannot get WRAP')
@@ -215,9 +215,9 @@ class Rules(object):
     def moveWrap(self):
         row, col = self.zero_pos
 
-        if (row == 0 or row == self.puzzle.shape[0] - 1) and col == 0:
+        if (row == 0 or row == len(self.puzzle) - 1) and col == 0:
             self.swap(self.puzzle, [row, col], [row, -1])
-        elif (row == 0 or row == self.puzzle.shape[0] - 1) and col == self.puzzle.shape[1] - 1:
+        elif (row == 0 or row == len(self.puzzle) - 1) and col == len(self.puzzle[0]) - 1:
             self.swap(self.puzzle, [row, col], [row, 0])
         else:
             raise Exception('Illegal move -> cannot move WRAP')
@@ -241,13 +241,13 @@ class Rules(object):
         if row == 0 and col == 0:
             return self.puzzle[row+1][col+1]
         # Top Right Corner
-        elif row == 0 and col == self.puzzle.shape[1] - 1:
+        elif row == 0 and col == len(self.puzzle[0]) - 1:
             return self.puzzle[row+1][col-1]
         # Bottom Left Corner
-        elif row == self.puzzle.shape[0] - 1 and col == 0:
+        elif row == len(self.puzzle) - 1 and col == 0:
             return self.puzzle[row-1][col+1]
         # Bottom Right Corner
-        elif row == self.puzzle.shape[0] - 1 and col == self.puzzle.shape[1] - 1:
+        elif row == len(self.puzzle) - 1 and col == len(self.puzzle[0]) - 1:
             return self.puzzle[row-1][col-1]
         else:
             raise Exception('Illegal move -> cannot get DIAGONAL')
@@ -277,13 +277,13 @@ class Rules(object):
         if row == 0 and col == 0:
             self.swap(self.puzzle, [row, col], [row + 1, col + 1])
         # Top Right Corner
-        elif row == 0 and col == self.puzzle.shape[1] - 1:
+        elif row == 0 and col == len(self.puzzle[0]) - 1:
             self.swap(self.puzzle, [row, col], [row + 1, col - 1])
         # Bottom Left Corner
-        elif row == self.puzzle.shape[0] - 1 and col == 0:
+        elif row == len(self.puzzle) - 1 and col == 0:
             self.swap(self.puzzle, [row, col], [row - 1, col + 1])
         # Bottom Right Corner
-        elif row == self.puzzle.shape[0] - 1 and col == self.puzzle.shape[1] - 1:
+        elif row == len(self.puzzle) - 1 and col == len(self.puzzle[0]) - 1:
             self.swap(self.puzzle, [row, col], [row - 1, col - 1])
         else:
             raise Exception('Illegal move -> cannot move DIAGONAL')
@@ -297,13 +297,13 @@ class Rules(object):
         if row == 0 and col == 0:
             return self.puzzle[-1][-1]
         # Top Right Corner
-        elif row == 0 and col == self.puzzle.shape[1] - 1:
+        elif row == 0 and col == len(self.puzzle[0]) - 1:
             return self.puzzle[-1][0]
         # Bottom Left Corner
-        elif row == self.puzzle.shape[0] - 1 and col == 0:
+        elif row == len(self.puzzle) - 1 and col == 0:
             return self.puzzle[0][-1]
         # Bottom Right Corner
-        elif row == self.puzzle.shape[0] - 1 and col == self.puzzle.shape[1] - 1:
+        elif row == len(self.puzzle) - 1 and col == len(self.puzzle[0]) - 1:
             return self.puzzle[0][0]
         else:
             raise Exception('Illegal move -> cannot get DIAGONAL WRAP')
@@ -333,13 +333,13 @@ class Rules(object):
         if row == 0 and col == 0:
             self.swap(self.puzzle, [row, col], [-1, -1])
         # Top Right Corner
-        elif row == 0 and col == self.puzzle.shape[1] - 1:
+        elif row == 0 and col == len(self.puzzle[0]) - 1:
             self.swap(self.puzzle, [row, col], [-1, 0])
         # Bottom Left Corner
-        elif row == self.puzzle.shape[0] - 1 and col == 0:
+        elif row == len(self.puzzle) - 1 and col == 0:
             self.swap(self.puzzle, [row, col], [0, -1])
         # Bottom Right Corner
-        elif row == self.puzzle.shape[0] - 1 and col == self.puzzle.shape[1] - 1:
+        elif row == len(self.puzzle) - 1 and col == len(self.puzzle[0]) - 1:
             self.swap(self.puzzle, [row, col], [0, 0])
         else:
             raise Exception('Illegal move -> cannot move DIAGONAL WRAP')
@@ -354,17 +354,17 @@ class Rules(object):
 
         if row != 0:
             pq.put((1, self.getUp(), 'up', self.puzzle))
-        if row != self.puzzle.shape[0] - 1 :
+        if row != len(self.puzzle) - 1 :
             pq.put((1, self.getDown(), 'down', self.puzzle))
         if col != 0:
             pq.put((1, self.getLeft(), 'left', self.puzzle))
-        if col != self.puzzle.shape[1] - 1:
+        if col != len(self.puzzle[0]) - 1:
             pq.put((1, self.getRight(), 'right', self.puzzle))
 
         if ((row == 0 and col == 0)
-        or (row == 0 and col == self.puzzle.shape[1] - 1)
-        or (row == self.puzzle.shape[0] - 1 and col == 0)
-        or (row == self.puzzle.shape[0] - 1 and col == self.puzzle.shape[1] - 1)):
+        or (row == 0 and col == len(self.puzzle[0]) - 1)
+        or (row == len(self.puzzle) - 1 and col == 0)
+        or (row == len(self.puzzle) - 1 and col == len(self.puzzle[0]) - 1)):
             pq.put((2, self.getWrap(), 'wrap'))
             pq.put((3, self.getDiagonal(), 'diagonal', self.puzzle))
             pq.put((3, self.getDiagWrap(), 'diagwrap', self.puzzle))
@@ -375,46 +375,46 @@ class Rules(object):
     def genMove_h1(self):
         row, col = self.zero_pos
         copy_puzzle = list(self.puzzle)
-        arr = []
+        children = Q.PriorityQueue()
 
         if row != 0:
             testpuzzle, tempzero = self.temp_moveUp(copy_puzzle)
             #pq.put((self.h1(testpuzzle), self.getUp(), 'up', child_state_puzzle))
-            arr.append([self.h1(testpuzzle), self.getUp(), 'up', testpuzzle])
+            children.put([self.h1(testpuzzle), self.getUp(), 'up', testpuzzle])
             
-        if row != self.puzzle.shape[0] - 1 :
+        if row != len(self.puzzle) - 1 :
             testpuzzle, tempzero = self.temp_moveDown(copy_puzzle)
             #pq.put((self.h1(testpuzzle), self.getDown(), 'down', testpuzzle))
-            arr.append([self.h1(testpuzzle), self.getDown(), 'down', testpuzzle])
+            children.put([self.h1(testpuzzle), self.getDown(), 'down', testpuzzle])
 
         if col != 0:
             testpuzzle, tempzero = self.temp_moveLeft(copy_puzzle)
             #pq.put((self.h1(testpuzzle), self.getLeft(), 'left', testpuzzle))
-            arr.append([self.h1(testpuzzle), self.getLeft(), 'left', testpuzzle])
+            children.put([self.h1(testpuzzle), self.getLeft(), 'left', testpuzzle])
 
-        if col != self.puzzle.shape[1] - 1:
+        if col != len(self.puzzle[0]) - 1:
             testpuzzle, tempzero = self.temp_moveRight(copy_puzzle)
             #pq.put((self.h1(testpuzzle), self.getRight(), 'right', testpuzzle))
-            arr.append([self.h1(testpuzzle), self.getRight(), 'right', testpuzzle])
+            children.put([self.h1(testpuzzle), self.getRight(), 'right', testpuzzle])
 
         if ((row == 0 and col == 0)
-        or (row == 0 and col == self.puzzle.shape[1] - 1)
-        or (row == self.puzzle.shape[0] - 1 and col == 0)
-        or (row == self.puzzle.shape[0] - 1 and col == self.puzzle.shape[1] - 1)):
+        or (row == 0 and col == len(self.puzzle[0]) - 1)
+        or (row == len(self.puzzle) - 1 and col == 0)
+        or (row == len(self.puzzle) - 1 and col == len(self.puzzle[0]) - 1)):
             testpuzzle, tempzero = self.temp_moveWrap(copy_puzzle)
             #pq.put((self.h1(testpuzzle), self.getWrap(), 'wrap', testpuzzle))
-            arr.append([self.h1(testpuzzle), self.getWrap(), 'wrap', testpuzzle])
+            children.put([self.h1(testpuzzle), self.getWrap(), 'wrap', testpuzzle])
 
             testpuzzle, tempzero = self.temp_moveDiagonal(copy_puzzle)
             #pq.put((self.h1(testpuzzle), self.getDiagonal(), 'diagonal', self.puzzle))
-            arr.append([self.h1(testpuzzle), self.getDiagonal(), 'diagonal', self.puzzle])
+            children.put([self.h1(testpuzzle), self.getDiagonal(), 'diagonal', self.puzzle])
 
             testpuzzle, tempzero = self.temp_moveDiagWrap(copy_puzzle)
             #pq.put((self.h1(testpuzzle), self.getDiagWrap(), 'diagwrap', self.puzzle))
-            arr.append([self.h1(testpuzzle), self.getDiagWrap(), 'diagwrap', self.puzzle])
+            children.put([self.h1(testpuzzle), self.getDiagWrap(), 'diagwrap', self.puzzle])
         
         #return pq
-        return arr
+        return children
 
     # TODO: NOT DONE / CORRECT
     def checkGoal(self):
