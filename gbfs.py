@@ -11,6 +11,7 @@ class GreedyBFS():
         self.visited_state = []
         self.closed_list = []  # list of visited states
         self.open_list = Q.PriorityQueue()  # priority queue ordered by total cost
+        self.openArr = [] # use this to compare instead of PQ
 
     def get_PQ_Content(self, pq):
         self.content = []
@@ -67,13 +68,21 @@ class GreedyBFS():
             pq1.put(item)
         return pq1
 
+    def is_in(self, child, arr):
+        copyArr = list(arr)
+        inside = False
+        for i in range(len(copyArr)):
+            if np.array_equal(child, arr[i]):
+                inside = True
+        return inside
+
     def gbfs(self, init_puzzle):
         rl = Rules(init_puzzle)
         if rl.checkGoal(): #if initial state is equal to goal, end ucs
             return print("Already at goal state") 
 
         copy_puzzle = list(init_puzzle)
-        self.open_list.put([0, 0, None, copy_puzzle, [0,0]]) # TODO: dafuq u do with this path
+        self.open_list.put([0, 0, None, copy_puzzle]) # TODO: dafuq u do with this path
 
         i = 0
         while not self.open_list.empty():
@@ -81,52 +90,41 @@ class GreedyBFS():
             i += 1
             print('\n\n')
             if rl.checkGoal(): #if initial state is equal to goal, end ucs
-                return print("Already at goal state") 
+                return print("Already at goal state")
 
             temp_open = self.open_list.get()
-            print('zzzzzzzzzzz', temp_open[3])
             heuristic_child = temp_open[0]
+            self.openarr = list(self.open_list.queue) # copying PQ to List
+
             self.visited_state = temp_open[3]
             self.closed_list.append(self.visited_state)
             print('\nclosed = ', self.closed_list)
+            print('open = ', self.open_list.queue)
+            print('visited = ', self.visited_state)
+
+            if i > 0:
+                current_state = self.action_move(temp_open[2], rl)
+                print('\ncurrent state = ', current_state)
 
             generated_children = rl.genMove_h1() # [self.h1(testpuzzle), self.getLeft(), 'left', testpuzzle]
             print('\ngen children = ', generated_children)
-            print('\n')
 
-            # for item in generated_children:
-            #     # print('item = ', item)
-            #     # print('closed = ', self.closed_list)
-            #     # print('open = ', self.open_list.queue)
-            #     if item not in self.closed_list or not(self.open_list.queue.count(generated_children) > 0):
+            for item in generated_children:
+                print('\n----------child ', item)
+                print('child[3] = ', item[3])
+                print('closed ', self.closed_list)
+                print('openArr ', self.openArr)
+                print()
+                heuristic, nextTile, nextMove, nextChild = item
 
-            #         ## TODO: remove duplicate!!!!!!!!!!!!!!!!!!!!!!!!!!
-            #         print('\nitem = ', item)
-            #         self.open_list.put(item)
-
-            #     elif self.open_list: # if the child in priority queue has higher PATH-COST than this child, replace it
-            #             if self.compare_Cost(heuristic_child, item[3], self.open_list): 
-            #                 self.open_list = self.replace_Cost(heuristic_child, item[3], self.open_list)
-            #             print('\n\npossMove ELSE OPEN STATE = ', self.open_list.queue)
-
-            # ALGO SENT BY DAVID
-            #
-            # for elem in generated_children:
-            #     # check if puzzle_state is inside open_list or inside closed_list
-            #     if elem[3] not in self.open_list.queue and elem[3] != self.closed_list:
-            #         self.open_list = self.mergePQ(self.open_list, elem)
-            
-            print('CURRENT PUZZLE = ', rl.getPuzzle())
-            print('open list = ', self.open_list.queue)
-
-            # if generated_children not in self.open_list.queue:
-            #     self.mergePQ(self.open_list, generated_children)
-
-            temp_h, temp_tile, temp_move, temp_puzzle = self.open_list.get()
-            current_puzzle = self.action_move(temp_move, rl)
-            print('CURRENT PUZZLE = ', current_puzzle)
-            print('\n=====================end loop===========================\n')
-               
+                if self.open_list.empty() or item not in self.openArr:
+                    if not self.is_in(item[3], self.closed_list):
+                        print('\nINSIDE IF===================')
+                        print('PUTTING INSIDE OPEN LIST\n')
+                        self.open_list.put([heuristic, nextTile, nextMove, nextChild])
+                        self.openArr.append([heuristic, nextTile, nextMove, nextChild])
+                else:
+                    print('\nELSE!!!!!!!!!!!!!!')
              
             
 
