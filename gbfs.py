@@ -12,16 +12,36 @@ class GreedyBFS():
         self.closed_list = []  # list of visited states
         self.open_list = Q.PriorityQueue()  # priority queue ordered by total cost
 
-    def get_start_state(self, puzzle_file):
-        self.puzzle = pd.read_csv(puzzle_file, sep=" ", header=None)
-        self.puzzle_list = []
-        for i in range(self.puzzle.ndim+1):
-            self.puzzle_list.append(self.puzzle[i].reshape(2,4)) # reshape 1D array(s) to 2x4 (row x col) 2D array
-        return self.puzzle_list
+    def get_PQ_Content(self, pq):
+        self.content = []
+        while not pq.empty():
+            self.content.append(pq.get())
+        
+        return self.content
+    
+    def compare_Cost(self, child_cost, child_state, pq):
+        self.content = self.get_PQ_Content(pq) # put priority queue content in list
 
-    def generate_children(self):
-        print()
-        # TODO
+        if len(self.content) != 0:
+            for cost in self.content:
+                if child_state == cost[2]: # get puzzle state in list
+                    if child_cost < cost[0]: # get cost value in list
+                        return True
+                    else:
+                        return False
+
+    def replace_Cost(self, child_cost, child_state, pq):
+        self.content = self.get_PQ_Content(pq) # put priority queue content in list
+        self.new_pq = Q.PriorityQueue()
+        if len(self.content) != 0:
+            for cost in self.content:
+                if child_state == cost[2]: # get puzzle state in list
+                    if child_cost < cost[0]: # get cost value in list
+                        cost[0] = child_cost
+                        self.new_pq.put(cost)
+                else:
+                    self.new_pq.put(cost)
+        return self.new_pq
 
     def action_move(self, move, rl):
         if move == "up":
@@ -65,42 +85,50 @@ class GreedyBFS():
 
             temp_open = self.open_list.get()
             print('zzzzzzzzzzz', temp_open[3])
+            heuristic_child = temp_open[0]
             self.visited_state = temp_open[3]
             self.closed_list.append(self.visited_state)
+            print('\nclosed = ', self.closed_list)
 
             generated_children = rl.genMove_h1() # [self.h1(testpuzzle), self.getLeft(), 'left', testpuzzle]
-            print('gen children = ', generated_children)
+            print('\ngen children = ', generated_children)
             print('\n')
 
-            for item in generated_children:
-                # print('item = ', item)
-                # print('closed = ', self.closed_list)
-                # print('open = ', self.open_list.queue)
-                if item not in self.closed_list and not(self.open_list.queue.count(generated_children) > 0):
+            # for item in generated_children:
+            #     # print('item = ', item)
+            #     # print('closed = ', self.closed_list)
+            #     # print('open = ', self.open_list.queue)
+            #     if item not in self.closed_list or not(self.open_list.queue.count(generated_children) > 0):
 
-                    ## TODO: remove duplicate!!!!!!!!!!!!!!!!!!!!!!!!!!
+            #         ## TODO: remove duplicate!!!!!!!!!!!!!!!!!!!!!!!!!!
+            #         print('\nitem = ', item)
+            #         self.open_list.put(item)
 
-                    #self.open_list = self.mergePQ(self.open_list, generated_children) 
-                    self.open_list.put(item)
-                else:
-                    print('\nelse')
-                
+            #     elif self.open_list: # if the child in priority queue has higher PATH-COST than this child, replace it
+            #             if self.compare_Cost(heuristic_child, item[3], self.open_list): 
+            #                 self.open_list = self.replace_Cost(heuristic_child, item[3], self.open_list)
+            #             print('\n\npossMove ELSE OPEN STATE = ', self.open_list.queue)
+
+            # ALGO SENT BY DAVID
+            #
+            # for elem in generated_children:
+            #     # check if puzzle_state is inside open_list or inside closed_list
+            #     if elem[3] not in self.open_list.queue and elem[3] != self.closed_list:
+            #         self.open_list = self.mergePQ(self.open_list, elem)
             
-            # something with visited state
             print('CURRENT PUZZLE = ', rl.getPuzzle())
             print('open list = ', self.open_list.queue)
+
+            # if generated_children not in self.open_list.queue:
+            #     self.mergePQ(self.open_list, generated_children)
 
             temp_h, temp_tile, temp_move, temp_puzzle = self.open_list.get()
             current_puzzle = self.action_move(temp_move, rl)
             print('CURRENT PUZZLE = ', current_puzzle)
             print('\n=====================end loop===========================\n')
+               
+             
             
-            # ALGO SENT BY DAVID
-            #
-            # for elem in generated_children:
-            #     # check if puzzle_state is inside open_list or inside closed_list
-            #     if elem[3] not in self.open_list and elem[3] != self.closed_list:
-            #         self.open_list = self.mergePQ(self.open_list, elem)
 
 
 
