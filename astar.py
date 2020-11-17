@@ -80,9 +80,9 @@ class AStar():
             
             self.closed_state.append([self.curr_f, self.curr_g, self.curr_h, self.current_puzzle])
             temp_time = time.time()
-            # if (temp_time - start) > 60:
-            #     print("No Solution")
-            #     break
+            if (temp_time - start) > 60:
+                print("No solution found under 60s")
+                break
         
         return "No Solution"
 
@@ -98,9 +98,9 @@ def get_Start_State(puzzle_file):
 def main():
     initial_States = get_Start_State("samplePuzzles.txt")
     solve = AStar()
-    for i in range(len(initial_States)):
-        #solve.astar(initial_States[i].tolist())
-        solve.astar(initial_States[0].tolist())
+    # for i in range(len(initial_States)):
+    #     print("\nSolving puzzle:", i)
+    solve.astar(initial_States[0].tolist())
 
 
 if __name__ == '__main__':
