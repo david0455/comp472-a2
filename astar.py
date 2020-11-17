@@ -133,7 +133,7 @@ def get_Start_State(puzzle_file):
     input_file = np.loadtxt(puzzle_file, delimiter=' ')
     puzzle_list = []
     for i in range(input_file.ndim+1):
-        puzzle_list.append(input_file[i].reshape(2,4)) # reshape 1D array(s) to 2x4 (row x col) 2D array
+        puzzle_list.append(input_file[i].reshape(2,4).astype(int)) # reshape 1D array(s) to 2x4 (row x col) 2D array
     return puzzle_list
 
 
