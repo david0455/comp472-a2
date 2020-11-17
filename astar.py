@@ -21,17 +21,6 @@ class AStar():
             self.h = 1
         return self.h
     
-    # Checks if current_child state is in open_queue or closed list
-    def is_in(self, elem, arr):
-        deep_copy = copy.deepcopy(arr)
-        state = list(deep_copy)
-        inside = False
-        for i in range(len(state)):
-            for j in range(len(state)):
-                if(elem == state[i][j]):
-                    inside = True
-        return inside
-    
     def compare_Cost(self, child_cost, child_state, pq):
         if len(pq) != 0:
             for cost in pq:
