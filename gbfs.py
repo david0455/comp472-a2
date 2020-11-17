@@ -14,7 +14,7 @@ class GreedyBFS():
         self.open_list = []
 
     def print_searchpath(self, index, heuristic, closed):
-        filename = str(index) + '_gbfs-h' + str(heuristic) + '_search.txt'
+        filename = ".//2_gbfs_output//" + str(index) + '_gbfs-h' + str(heuristic) + '_search.txt'
         file = open(filename, 'a')
 
         for elem in closed:
@@ -25,7 +25,7 @@ class GreedyBFS():
         file.close()
     
     def print_solutionpath(self, index, heuristic, path, execution_time, solved):
-        filename = str(index) + '_gbfs-h' + str(heuristic) + '_solution.txt'
+        filename = ".//2_gbfs_output//" + str(index) + '_gbfs-h' + str(heuristic) + '_solution.txt'
         file = open(filename, 'a')
         total_cost = 0
         for elem in path:
@@ -102,7 +102,6 @@ def main():
     initial_puzzles = get_Start_State("samplePuzzles.txt")
 
     solve = GreedyBFS()
-
     solve.gbfs(initial_puzzles[0].tolist(), 0, 1) # remove when done testing
 
     # GOOOD
