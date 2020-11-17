@@ -3,6 +3,15 @@ import numpy as np
 import copy
 
 
+# If the last tile of current puzzle state is not equal to zero, h(n) = 1
+def h0(current_puzzle_state):
+    # current_puzzle_state[1][3] = Row 2 Col 4
+    if(current_puzzle_state[1][3] == 0):
+        h = 0
+    else:
+        h = 1
+    return h
+
 def check_goal(puzzle):
     goal1 = np.array([[1, 2, 3, 4],
               [5, 6, 7, 0]])
