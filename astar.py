@@ -2,10 +2,8 @@ import queue as Q
 import pandas as pd
 import numpy as np
 import time
-import copy
 
-
-from puzzle_r import check_goal, generate_children, h0
+from puzzle_rules import check_goal, generate_children, h0
 
 class AStar():
 
@@ -13,7 +11,6 @@ class AStar():
         self.closed_state = []  # list of visited states
         self.open_state = []   # priority queue ordered by total cost
 
-    
     def compare_Cost(self, child_cost, child_state, pq):
         if len(pq) != 0:
             for cost in pq:
@@ -83,9 +80,9 @@ class AStar():
             
             self.closed_state.append([self.curr_f, self.curr_g, self.curr_h, self.current_puzzle])
             temp_time = time.time()
-            if (temp_time - start) > 60:
-                print("No Solution")
-                break
+            # if (temp_time - start) > 60:
+            #     print("No Solution")
+            #     break
         
         return "No Solution"
 
