@@ -101,13 +101,11 @@ def get_Start_State(puzzle_file):
 def main():
     initial_puzzles = get_Start_State("samplePuzzles.txt")
 
-    solve = GreedyBFS()
-    solve.gbfs(initial_puzzles[0].tolist(), 0, 1) # remove when done testing
-
-    # GOOOD
-    # for i in range(len(initial_puzzles)):
-    #     for j in range(2):
-    #         solve.gbfs(initial_puzzles[i].tolist(), i, j+1)
+    for i in range(len(initial_puzzles)):
+        for j in range(2):
+            solve = GreedyBFS()
+            solve.gbfs(initial_puzzles[i].tolist(), i, j+1)
+       
 
 if __name__ == '__main__':
     main()
