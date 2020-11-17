@@ -181,13 +181,12 @@ def moveRowWrap(puzzle):
 def getColWrap(puzzle):
     row, col = find_tile(puzzle, 0)
 
-    if len(puzzle) > 2: # if more than 2 rows in puzzle
-        if row == 0 and (col == 0 or col == len(puzzle[0]) - 1):
-            return puzzle[-1][col]
-        elif (row == 0 or row == len(puzzle) - 1) and col == len(puzzle[0]) - 1:
-            return puzzle[row][0]
-        else:
-            raise Exception('Illegal move -> cannot get WRAP')
+    if row == 0 and (col == 0 or col == len(puzzle[0]) - 1):
+        return puzzle[-1][col]
+    elif (row == 0 or row == len(puzzle) - 1) and col == len(puzzle[0]) - 1:
+        return puzzle[row][0]
+    else:
+        raise Exception('Illegal move -> cannot get WRAP')
 
 
 def moveColWrap(puzzle):
@@ -318,7 +317,8 @@ def generate_children(puzzle):
     or (row == len(puzzle) - 1 and col == 0)
     or (row == len(puzzle) - 1 and col == len(puzzle[0]) - 1)):
         children.put((2, getRowWrap(puzzle), moveRowWrap(copy_puzzle)))
-        children.put((2, getColWrap(puzzle), moveColWrap(copy_puzzle)))
+        if len(puzzle) > 2: # if more than 2 rows in puzzle, then colwrap enabled
+            children.put((2, getColWrap(puzzle), moveColWrap(copy_puzzle)))
         children.put((3, getDiagonal(puzzle), moveDiagonal(copy_puzzle)))
         children.put((3, getDiagWrap(puzzle), moveDiagWrap(copy_puzzle)))
     return children
