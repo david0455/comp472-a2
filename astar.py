@@ -50,6 +50,7 @@ class AStar():
             self.open_state.sort(key=lambda x: x[0])
             self.curr_f, self.curr_g, self.curr_h, self.current_puzzle, self.path = self.open_state.pop(0) # pop lowest cost move from open queue
 
+            # apply goal function
             if check_goal(self.current_puzzle): # Check if current puzzle state is goal state
                 end = time.time()
                 execution_time = end - start
