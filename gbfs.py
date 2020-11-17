@@ -10,32 +10,47 @@ from puzzle_rules import check_goal, generate_children, h1, h2
 class GreedyBFS():
 
     def __init__(self):
-        self.visited_state = []
-        self.closed_list = []  # list of visited states
-        self.open_list = []  # priority queue ordered by total cost
+        self.closed_list = []
+        self.open_list = []
 
     def print_searchpath(self, index, heuristic, closed):
-        filename = str(index) + '-gbfs-h' + str(heuristic) + '_search.txt'
+        filename = str(index) + '_gbfs-h' + str(heuristic) + '_search.txt'
         file = open(filename, 'a')
 
         for elem in closed:
             f, g, h, puzzle = elem
             strpuzzle = ' '.join(str(e) for e in puzzle)
-            strpuzzle = re.sub("\[|\]|,", '', strpuzzle)
+            strpuzzle = re.sub(r"\[|\]|,", '', strpuzzle)
             file.write(str(f) + ' ' + str(g) + ' ' + str(h) + ' ' + strpuzzle + '\n')
+        file.close()
+    
+    def print_solutionpath(self, index, heuristic, path, execution_time, solved):
+        filename = str(index) + '_gbfs-h' + str(heuristic) + '_solution.txt'
+        file = open(filename, 'a')
+        total_cost = 0
+        for elem in path:
+            tile, cost, puzzle = elem
+            total_cost += cost
+            strpuzzle = ' '.join(str(e) for e in puzzle)
+            strpuzzle = re.sub(r"\[|\]|,", '', strpuzzle)
+            file.write(str(tile) + ' ' + str(cost) + ' ' + strpuzzle + '\n')
+        if solved:
+            file.write(str(total_cost) + ' ' + str(execution_time) + '\n')
+        else:
+            file.write("no solution" + '\n')
         file.close()
 
     def gbfs(self, init_puzzle, index, heuristic):      
         start = time.time()
         if heuristic == 1:
-            self.open_list.append([h1(init_puzzle), 0, init_puzzle, [0]])
+            self.open_list.append([h1(init_puzzle), 0, init_puzzle, [[0, h1(init_puzzle), init_puzzle]]])
         elif heuristic == 2:
-            self.open_list.append([h2(init_puzzle), 0, init_puzzle, [0]])
+            self.open_list.append([h2(init_puzzle), 0, init_puzzle, [[0, h2(init_puzzle), init_puzzle]]])
 
         while len(self.open_list) > 0:
             self.open_list.sort(key=lambda x: x[0])
             h_cost, next_tile, current_puzzle, path = self.open_list.pop(0)
-
+          
             if check_goal(current_puzzle):
                 end = time.time()
                 execution_time = end - start
@@ -43,7 +58,10 @@ class GreedyBFS():
                     self.closed_list.append([0, 0, h1(current_puzzle), current_puzzle])
                 elif heuristic == 2:
                     self.closed_list.append([0, 0, h2(current_puzzle), current_puzzle])
+
+                self.print_solutionpath(index, heuristic, path, execution_time, True)
                 self.print_searchpath(index, heuristic, self.closed_list)
+                
                 return print("Solution found in", execution_time, "sec", current_puzzle)
 
             children = generate_children(current_puzzle)
@@ -57,7 +75,7 @@ class GreedyBFS():
                         child_h = h2(child_state)
 
                     if not (child_state in (item for sublist in self.open_list for item in sublist)) and not (child_state in (item for sublist in self.closed_list for item in sublist)):
-                        path.append(child_tile)
+                        path.append([child_tile, child_h, child_state])
                         self.open_list.append([child_h, child_tile, child_state, path])
 
             if heuristic == 1:
@@ -66,7 +84,9 @@ class GreedyBFS():
                 self.closed_list.append([0, 0, h2(current_puzzle), current_puzzle])
             temp_time = time.time()
             if (temp_time - start) > 60:
-                print("No Solution")
+                self.print_searchpath(index, heuristic, self.closed_list)
+                self.print_solutionpath(index, heuristic, path, (temp_time - start), False)
+                print("No solution found under 60s")
                 break
         
         return "No Solution"
