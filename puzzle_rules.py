@@ -69,8 +69,8 @@ class Rules(object):
 
     # Count the number of tiles out of place compared to goal
     def h1(self, puzzle):
-        h1_val1 = 0
-        h1_val2 = 0
+        h1_val1 = 0 # goal 1
+        h1_val2 = 0 # goal 2
         for row in range(len(self.puzzle)):
             for col in range(len(self.puzzle[0])):
                 if puzzle[row][col] != self.goal_1[row][col]:
