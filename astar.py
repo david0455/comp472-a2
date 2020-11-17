@@ -80,9 +80,9 @@ class AStar():
             
             self.closed_state.append([self.curr_f, self.curr_g, self.curr_h, self.current_puzzle])
             temp_time = time.time()
-            # if (temp_time - start) > 60:
-            #     print("No Solution")
-            #     break
+            if (temp_time - start) > 60:
+                print("One minute passed - No Solution")
+                break
         
         return "No Solution"
 
