@@ -14,7 +14,7 @@ class AStar():
 
 
     def print_searchpath(self, index, heuristic, closed):
-        filename = str(index) + '_astar-h' + str(heuristic) + '_search.txt'
+        filename = ".//3_astar_output//" + str(index) + '_astar-h' + str(heuristic) + '_search.txt'
         file = open(filename, 'a')
 
         for elem in closed:
@@ -26,7 +26,7 @@ class AStar():
     
 
     def print_solutionpath(self, index, heuristic, path, execution_time, solved):
-        filename = str(index) + '_astar-h' + str(heuristic) + '_solution.txt'
+        filename = ".//3_astar_output//" + str(index) + '_astar-h' + str(heuristic) + '_solution.txt'
         file = open(filename, 'a')
         total_cost = 0
         for elem in path:

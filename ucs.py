@@ -46,7 +46,7 @@ class UniformCostSearch():
 
 
     def print_searchpath(self, index, closed):
-        filename = str(index) + '_ucs_search.txt'
+        filename = ".//1_ucs_output//" + str(index) + '_ucs_search.txt'
         file = open(filename, 'a')
 
         for elem in closed:
@@ -57,7 +57,7 @@ class UniformCostSearch():
         file.close()
     
     def print_solutionpath(self, index, path, execution_time, solved):
-        filename = str(index) + '_ucs_solution.txt'
+        filename = ".//1_ucs_output//" + str(index) + '_ucs_solution.txt'
         file = open(filename, 'a')
         total_cost = 0
         for elem in path:
@@ -115,7 +115,7 @@ class UniformCostSearch():
                 self.closed_state.append([0, self.curr_g , 0, self.current_puzzle])
                 temp_time = time.time()
                 if (temp_time - start) > 60:
-                    print('No Solution')
+                    print('No solution found under 60s')
                     self.print_solutionpath(index, self.path, (temp_time - start), False)
                     self.print_searchpath(index, self.closed_state)                    
                     break
