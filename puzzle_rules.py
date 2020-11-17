@@ -163,7 +163,7 @@ def getRowWrap(puzzle):
     elif (row == 0 or row == len(puzzle) - 1) and col == len(puzzle[0]) - 1:
         return puzzle[row][0]
     else:
-        raise Exception('Illegal move -> cannot get WRAP')
+        raise Exception('Illegal move -> cannot get ROW WRAP')
 
 
 def moveRowWrap(puzzle):
@@ -174,7 +174,7 @@ def moveRowWrap(puzzle):
     elif (row == 0 or row == len(puzzle) - 1) and col == len(puzzle[0]) - 1:
         new_state = swap(puzzle, [row, col], [row, 0])
     else:
-        raise Exception('Illegal move -> cannot move WRAP')
+        raise Exception('Illegal move -> cannot move ROW WRAP')
     return new_state
 
 
@@ -183,21 +183,21 @@ def getColWrap(puzzle):
 
     if row == 0 and (col == 0 or col == len(puzzle[0]) - 1):
         return puzzle[-1][col]
-    elif (row == 0 or row == len(puzzle) - 1) and col == len(puzzle[0]) - 1:
-        return puzzle[row][0]
+    elif row == len(puzzle) - 1 and (col == 0 or col == len(puzzle[0]) - 1):
+        return puzzle[0][col]
     else:
-        raise Exception('Illegal move -> cannot get WRAP')
+        raise Exception('Illegal move -> cannot get COL WRAP')
 
 
 def moveColWrap(puzzle):
     row, col = find_tile(puzzle, 0)
 
-    if (row == 0 or row == len(puzzle) - 1) and col == 0:
-        new_state = swap(puzzle, [row, col], [row, -1])
-    elif (row == 0 or row == len(puzzle) - 1) and col == len(puzzle[0]) - 1:
-        new_state = swap(puzzle, [row, col], [row, 0])
+    if row == 0 and (col == 0 or col == len(puzzle[0]) - 1):
+        new_state = swap(puzzle, [row, col], [-1, col])
+    elif row == len(puzzle) - 1 and (col == 0 or col == len(puzzle[0]) - 1):
+        new_state = swap(puzzle, [row, col], [0, col])
     else:
-        raise Exception('Illegal move -> cannot move WRAP')
+        raise Exception('Illegal move -> cannot move COL WRAP')
 
 
 def getDiagonal(puzzle):
