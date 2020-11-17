@@ -51,12 +51,14 @@ class AStar():
                     else:
                         return False
 
-    def replace_Cost(self, child_cost, child_state, pq):
+    def replace_Cost(self, child_f, total_cost, child_h, child_state, pq):
         if len(pq) != 0:
             for cost in pq:
                 if child_state == cost[3]: # get puzzle state in list
-                    if child_cost < cost[0]: # get cost value in list
-                        cost[0] = child_cost
+                    if child_f < cost[0]: # get cost value in list
+                        cost[0] = child_f
+                        cost[1] = total_cost
+                        cost[2] = child_h
         return pq
 
     # calculate total path cost
@@ -107,7 +109,7 @@ class AStar():
                     
                     if (self.child_puzzle_state in (item for sublist in self.open_state for item in sublist)): # check if child is in open_state
                         if self.compare_Cost(child_f, self.child_puzzle_state, self.open_state):  # if child_f is lower than the cost inside open_state, replace it
-                            self.open_state = self.replace_Cost(child_f, self.child_puzzle_state, self.open_state)
+                            self.open_state = self.replace_Cost(child_f, total_cost, child_h, self.child_puzzle_state, self.open_state)
 
                     elif (self.child_puzzle_state in (item for sublist in self.closed_state for item in sublist)): # check if child is in closed list
                         if self.compare_Cost(child_f, self.child_puzzle_state, self.open_state):  # if child_f is lower than the cost inside closed list, put it back to open_state
