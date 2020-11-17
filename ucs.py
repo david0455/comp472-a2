@@ -82,7 +82,7 @@ class UniformCostSearch():
                                 self.open_state = self.replace_Cost(child_f, child_puzzle_state, self.open_state)
                 
                 temp_time = time.time()
-                if (temp_time - start) > 100:
+                if (temp_time - start) > 60:
                     print(self.curr_f, self.curr_g, self.curr_h, self.current_puzzle)
                     break
             return print("No Solution")
