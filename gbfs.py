@@ -43,9 +43,9 @@ class GreedyBFS():
     def gbfs(self, init_puzzle, index, heuristic):      
         start = time.time()
         if heuristic == 1:
-            self.open_list.append([h1(init_puzzle), 0, init_puzzle, [[0, h1(init_puzzle), init_puzzle]]])
+            self.open_list.append([h1(init_puzzle), 0, init_puzzle, [[0, 0, init_puzzle]]])
         elif heuristic == 2:
-            self.open_list.append([h2(init_puzzle), 0, init_puzzle, [[0, h2(init_puzzle), init_puzzle]]])
+            self.open_list.append([h2(init_puzzle), 0, init_puzzle, [[0, 0, init_puzzle]]])
 
         while len(self.open_list) > 0:
             self.open_list.sort(key=lambda x: x[0])

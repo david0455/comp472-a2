@@ -75,9 +75,9 @@ class AStar():
         start = time.time()
         # initial-state: (f(n), g(n), h(n), curr _puzzle = Starting Puzzle, Path = [tile,cost, current_puzzle])
         if heuristic == 1:
-            self.open_state.append([h1(initial_state), 0, h1(initial_state), initial_state, [[0, h1(initial_state), initial_state]]]) 
+            self.open_state.append([h1(initial_state), 0, h1(initial_state), initial_state, [[0, 0, initial_state]]]) 
         elif heuristic == 2:
-            self.open_state.append([h2(initial_state), 0, h2(initial_state), initial_state, [[0, h2(initial_state), initial_state]]]) 
+            self.open_state.append([h2(initial_state), 0, h2(initial_state), initial_state, [[0, 0, initial_state]]]) 
         
         while (len(self.open_state) > 0):
 
