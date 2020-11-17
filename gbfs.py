@@ -24,7 +24,7 @@ class GreedyBFS():
             file.write(str(f) + ' ' + str(g) + ' ' + str(h) + ' ' + strpuzzle + '\n')
         file.close()
     
-    def print_solutionpath(self, index, heuristic, path, execution_time):
+    def print_solutionpath(self, index, heuristic, path, execution_time, solved):
         filename = str(index) + '_gbfs-h' + str(heuristic) + '_solution.txt'
         file = open(filename, 'a')
         total_cost = 0
@@ -34,7 +34,10 @@ class GreedyBFS():
             strpuzzle = ' '.join(str(e) for e in puzzle)
             strpuzzle = re.sub(r"\[|\]|,", '', strpuzzle)
             file.write(str(tile) + ' ' + str(cost) + ' ' + strpuzzle + '\n')
-        file.write(str(total_cost) + ' ' + str(execution_time) + '\n')
+        if solved:
+            file.write(str(total_cost) + ' ' + str(execution_time) + '\n')
+        else:
+            file.write("no solution" + '\n')
         file.close()
 
     def gbfs(self, init_puzzle, index, heuristic):      
@@ -56,7 +59,7 @@ class GreedyBFS():
                 elif heuristic == 2:
                     self.closed_list.append([0, 0, h2(current_puzzle), current_puzzle])
 
-                self.print_solutionpath(index, heuristic, path, execution_time)
+                self.print_solutionpath(index, heuristic, path, execution_time, True)
                 self.print_searchpath(index, heuristic, self.closed_list)
                 
                 return print("Solution found in", execution_time, "sec", current_puzzle)
@@ -79,10 +82,12 @@ class GreedyBFS():
                 self.closed_list.append([0, 0, h1(current_puzzle), current_puzzle])
             elif heuristic == 2:
                 self.closed_list.append([0, 0, h2(current_puzzle), current_puzzle])
-            # temp_time = time.time()
-            # if (temp_time - start) > 60:
-            #     print("No Solution")
-            #     break
+            temp_time = time.time()
+            if (temp_time - start) > 60:
+                self.print_searchpath(index, heuristic, self.closed_list)
+                self.print_solutionpath(index, heuristic, path, (temp_time - start), False)
+                print("No solution found under 60s")
+                break
         
         return "No Solution"
 

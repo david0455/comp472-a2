@@ -2,6 +2,7 @@ import queue as Q
 import pandas as pd
 import numpy as np
 import time
+import re
 
 from puzzle_rules import check_goal, generate_children, h0
 
@@ -44,11 +45,39 @@ class UniformCostSearch():
         return self.f
 
 
-    def ucs(self, initial_state):
+    def print_searchpath(self, index, closed):
+        filename = str(index) + '_ucs_search.txt'
+        file = open(filename, 'a')
+
+        for elem in closed:
+            f, g, h, puzzle = elem
+            strpuzzle = ' '.join(str(e) for e in puzzle)
+            strpuzzle = re.sub(r"\[|\]|,", '', strpuzzle)
+            file.write(str(f) + ' ' + str(g) + ' ' + str(h) + ' ' + strpuzzle + '\n')
+        file.close()
+    
+    def print_solutionpath(self, index, path, execution_time, solved):
+        filename = str(index) + '_ucs_solution.txt'
+        file = open(filename, 'a')
+        total_cost = 0
+        for elem in path:
+            tile, cost, puzzle = elem
+            total_cost += cost
+            strpuzzle = ' '.join(str(e) for e in puzzle)
+            strpuzzle = re.sub(r"\[|\]|,", '', strpuzzle)
+            file.write(str(tile) + ' ' + str(cost) + ' ' + strpuzzle + '\n')
+        if solved:
+            file.write(str(total_cost) + ' ' + str(execution_time) + '\n')
+        else:
+            file.write("no solution" + '\n')
+        file.close()
+
+    
+    def ucs(self, initial_state, index):
             start = time.time()
             
             # initial-state: (f(n), g(n), h(n), curr _puzzle = Starting Puzzle, Path = [tile,cost, current_puzzle])  
-            self.open_state.append([0, 0, 0, initial_state, list([0, 0, initial_state])]) 
+            self.open_state.append([0, 0, 0, initial_state, [[0, 0, initial_state]]]) 
 
             while len(self.open_state) > 0:
                 
@@ -59,7 +88,10 @@ class UniformCostSearch():
                 if check_goal(self.current_puzzle):
                     end = time.time()
                     execution_time = end - start
-                    self.closed_state.append((self.current_puzzle))
+                    self.closed_state.append([0, self.curr_g , 0, self.current_puzzle])
+
+                    self.print_solutionpath(index, self.path, execution_time, True)
+                    self.print_searchpath(index, self.closed_state)
                     return print("Solution found in", execution_time, "sec", self.current_puzzle)
                 
                 # generate possible successors from current puzzle state
@@ -71,39 +103,42 @@ class UniformCostSearch():
                         
                         # Calculate each cost
                         total_cost = self.get_path_cost(child_path_cost, self.curr_g) 
-                        child_f = self.calc_f(total_cost, 0)
 
                         if not (child_puzzle_state in (item for sublist in self.open_state for item in sublist)) and not (child_puzzle_state in (item for sublist in self.closed_state for item in sublist)):  # check if the child is in closed list or open priority queue
-                            self.path.append([child_moved_tile, child_f, child_puzzle_state])
-                            self.open_state.append([child_f, child_f, 0, child_puzzle_state, self.path])
+                            self.path.append([child_moved_tile, total_cost, child_puzzle_state])
+                            self.open_state.append([0, total_cost, 0, child_puzzle_state, self.path])
 
                         elif (child_puzzle_state in (item for sublist in self.open_state for item in sublist)): # if the child in priority queue has higher PATH-COST than this child, replace it
-                            if self.compare_Cost(child_f, child_puzzle_state, self.open_state): 
-                                self.open_state = self.replace_Cost(child_f, child_puzzle_state, self.open_state)
+                            if self.compare_Cost(total_cost, child_puzzle_state, self.open_state): 
+                                self.open_state = self.replace_Cost(total_cost, child_puzzle_state, self.open_state)
                 
+                self.closed_state.append([0, self.curr_g , 0, self.current_puzzle])
                 temp_time = time.time()
                 if (temp_time - start) > 60:
-                    print(self.curr_f, self.curr_g, self.curr_h, self.current_puzzle)
+                    print('No Solution')
+                    self.print_solutionpath(index, self.path, (temp_time - start), False)
+                    self.print_searchpath(index, self.closed_state)                    
                     break
             return print("No Solution")
 
 
-# def get_Start_State(puzzle_file):
-#     input_file = np.loadtxt(puzzle_file, delimiter=' ')
-#     puzzle_list = []
-#     for i in range(input_file.ndim+1):
-#         puzzle_list.append(input_file[i].reshape(2,4)) # reshape 1D array(s) to 2x4 (row x col) 2D array
-#     return puzzle_list
+def get_Start_State(puzzle_file):
+    input_file = np.loadtxt(puzzle_file, delimiter=' ')
+    puzzle_list = []
+    for i in range(input_file.ndim+1):
+        puzzle_list.append(input_file[i].reshape(2,4)) # reshape 1D array(s) to 2x4 (row x col) 2D array
+    return puzzle_list
+
 
 def main():
-    input_file = np.loadtxt("samplePuzzles.txt", delimiter=' ')
-
-    first_puzzle = input_file[0].reshape(2,4)
-    second_puzzle = input_file[1].reshape(2,4)
-    third_puzzle = input_file[2].reshape(2,4)
-
+    initial_states = get_Start_State("samplePuzzles.txt")
     solve = UniformCostSearch()
-    solve.ucs(first_puzzle.tolist())
+    solve.ucs(initial_states[0].tolist(), 1)
+    
+    # for i in range(len(initial_states)):
+    #     for j in range(2):
+    #         solve.astar(initial_states[i].tolist(), i, j+1)
+
 
 if __name__ == '__main__':
     main()

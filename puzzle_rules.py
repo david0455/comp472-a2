@@ -15,9 +15,9 @@ def check_goal(puzzle):
 
 
 # If the last tile of current puzzle state is not equal to zero, h(n) = 1
-def h0(current_puzzle_state):
-    # current_puzzle_state[1][3] = Row 2 Col 4
-    if(current_puzzle_state[1][3] == 0):
+def h0(puzzle):
+    # puzzle[1][3] = Row 2 Col 4
+    if(puzzle[1][3] == 0):
         h = 0
     else:
         h = 1
@@ -66,191 +66,214 @@ def h2(puzzle):
 
 
 # Finds the coordinates of the 0 tile
-def find_tile(current_puzzle_state, tileNumber):
-    for row in range(len(current_puzzle_state)):
-        for col in range(len(current_puzzle_state[0])):
-            if current_puzzle_state[row][col] == tileNumber:
+def find_tile(puzzle, tileNumber):
+    for row in range(len(puzzle)):
+        for col in range(len(puzzle[0])):
+            if puzzle[row][col] == tileNumber:
                 return row, col
 
 
-def getUp(current_puzzle_state):
-    row, col = find_tile(current_puzzle_state, 0)
+def getUp(puzzle):
+    row, col = find_tile(puzzle, 0)
     if row == 0:
         raise Exception('Illegal move -> cannot get UP')
-    return current_puzzle_state[row-1][col]
+    return puzzle[row-1][col]
 
 
-def moveUp(current_puzzle_state):
-    row, col = find_tile(current_puzzle_state, 0)
+def moveUp(puzzle):
+    row, col = find_tile(puzzle, 0)
 
     # If ZERO is at first row, then illegal
     if row == 0:
         raise Exception('Illegal move -> cannot move UP')
 
-    new_state = swap(current_puzzle_state, [row, col], [row - 1, col])
+    new_state = swap(puzzle, [row, col], [row - 1, col])
 
     return new_state
 
 
-def getDown(current_puzzle_state):
-    row, col = find_tile(current_puzzle_state, 0)
+def getDown(puzzle):
+    row, col = find_tile(puzzle, 0)
 
-    if row ==  len(current_puzzle_state) - 1:
+    if row ==  len(puzzle) - 1:
         raise Exception('Illegal move -> cannot get DOWN')
 
-    return current_puzzle_state[row+1][col]
+    return puzzle[row+1][col]
 
 
-def moveDown(current_puzzle_state):
-    row, col = find_tile(current_puzzle_state, 0)
+def moveDown(puzzle):
+    row, col = find_tile(puzzle, 0)
 
     # If ZERO is at last row, then illegal
-    if row == len(current_puzzle_state) - 1:
+    if row == len(puzzle) - 1:
         raise Exception('Illegal move -> cannot move DOWN')
 
-    new_state = new_state = swap(current_puzzle_state, [row, col], [row + 1, col])
+    new_state = new_state = swap(puzzle, [row, col], [row + 1, col])
 
     return new_state
 
 
-def getLeft(current_puzzle_state):
-    row, col = find_tile(current_puzzle_state, 0)
+def getLeft(puzzle):
+    row, col = find_tile(puzzle, 0)
 
     if col == 0:
         raise Exception('Illegal move -> cannot get LEFT')
 
-    return current_puzzle_state[row][col-1]
+    return puzzle[row][col-1]
 
 
-def moveLeft(current_puzzle_state):
-    row, col = find_tile(current_puzzle_state, 0)
+def moveLeft(puzzle):
+    row, col = find_tile(puzzle, 0)
 
     # If ZERO is at first column, then illegal
     if col == 0:
         raise Exception('Illegal move -> cannot move LEFT')
 
-    new_state = swap(current_puzzle_state, [row, col], [row, col - 1])
+    new_state = swap(puzzle, [row, col], [row, col - 1])
 
     return new_state
 
 
-def getRight(current_puzzle_state):
-    row, col = find_tile(current_puzzle_state, 0)
+def getRight(puzzle):
+    row, col = find_tile(puzzle, 0)
 
-    if col == len(current_puzzle_state[0]) - 1:
+    if col == len(puzzle[0]) - 1:
         raise Exception('Illegal move -> cannot get RIGHT')
 
-    return current_puzzle_state[row][col+1]
+    return puzzle[row][col+1]
 
 
-def moveRight(current_puzzle_state):
-    row, col = find_tile(current_puzzle_state, 0)
+def moveRight(puzzle):
+    row, col = find_tile(puzzle, 0)
 
     # If ZERO is at last column, then illegal
-    if col == len(current_puzzle_state[0]) - 1:
+    if col == len(puzzle[0]) - 1:
         raise Exception('Illegal move -> cannot move RIGHT')
 
-    new_state = swap(current_puzzle_state, [row, col], [row, col + 1])
+    new_state = swap(puzzle, [row, col], [row, col + 1])
 
     return new_state
 
 
-def getWrap(current_puzzle_state):
-    row, col = find_tile(current_puzzle_state, 0)
+def getRowWrap(puzzle):
+    row, col = find_tile(puzzle, 0)
 
-    if (row == 0 or row == len(current_puzzle_state) - 1) and col == 0:
-        return current_puzzle_state[row][-1]
-    elif (row == 0 or row == len(current_puzzle_state) - 1) and col == len(current_puzzle_state[0]) - 1:
-        return current_puzzle_state[row][0]
+    if (row == 0 or row == len(puzzle) - 1) and col == 0:
+        return puzzle[row][-1]
+    elif (row == 0 or row == len(puzzle) - 1) and col == len(puzzle[0]) - 1:
+        return puzzle[row][0]
     else:
         raise Exception('Illegal move -> cannot get WRAP')
 
 
-def moveWrap(current_puzzle_state):
-    row, col = find_tile(current_puzzle_state, 0)
+def moveRowWrap(puzzle):
+    row, col = find_tile(puzzle, 0)
 
-    if (row == 0 or row == len(current_puzzle_state) - 1) and col == 0:
-        new_state = swap(current_puzzle_state, [row, col], [row, -1])
-    elif (row == 0 or row == len(current_puzzle_state) - 1) and col == len(current_puzzle_state[0]) - 1:
-        new_state = swap(current_puzzle_state, [row, col], [row, 0])
+    if (row == 0 or row == len(puzzle) - 1) and col == 0:
+        new_state = swap(puzzle, [row, col], [row, -1])
+    elif (row == 0 or row == len(puzzle) - 1) and col == len(puzzle[0]) - 1:
+        new_state = swap(puzzle, [row, col], [row, 0])
     else:
         raise Exception('Illegal move -> cannot move WRAP')
     return new_state
 
 
-def getDiagonal(current_puzzle_state):
-    row, col = find_tile(current_puzzle_state, 0)
+def getColWrap(puzzle):
+    row, col = find_tile(puzzle, 0)
+
+    if len(puzzle) > 2: # if more than 2 rows in puzzle
+        if row == 0 and (col == 0 or col == len(puzzle[0]) - 1):
+            return puzzle[-1][col]
+        elif (row == 0 or row == len(puzzle) - 1) and col == len(puzzle[0]) - 1:
+            return puzzle[row][0]
+        else:
+            raise Exception('Illegal move -> cannot get WRAP')
+
+
+def moveColWrap(puzzle):
+    row, col = find_tile(puzzle, 0)
+
+    if (row == 0 or row == len(puzzle) - 1) and col == 0:
+        new_state = swap(puzzle, [row, col], [row, -1])
+    elif (row == 0 or row == len(puzzle) - 1) and col == len(puzzle[0]) - 1:
+        new_state = swap(puzzle, [row, col], [row, 0])
+    else:
+        raise Exception('Illegal move -> cannot move WRAP')
+
+
+def getDiagonal(puzzle):
+    row, col = find_tile(puzzle, 0)
 
     # Top Left Corner
     if row == 0 and col == 0:
-        return current_puzzle_state[row+1][col+1]
+        return puzzle[row+1][col+1]
     # Top Right Corner
-    elif row == 0 and col == len(current_puzzle_state[0]) - 1:
-        return current_puzzle_state[row+1][col-1]
+    elif row == 0 and col == len(puzzle[0]) - 1:
+        return puzzle[row+1][col-1]
     # Bottom Left Corner
-    elif row == len(current_puzzle_state) - 1 and col == 0:
-        return current_puzzle_state[row-1][col+1]
+    elif row == len(puzzle) - 1 and col == 0:
+        return puzzle[row-1][col+1]
     # Bottom Right Corner
-    elif row == len(current_puzzle_state) - 1 and col == len(current_puzzle_state[0]) - 1:
-        return current_puzzle_state[row-1][col-1]
+    elif row == len(puzzle) - 1 and col == len(puzzle[0]) - 1:
+        return puzzle[row-1][col-1]
     else:
         raise Exception('Illegal move -> cannot get DIAGONAL')
 
 
-def moveDiagonal(current_puzzle_state):
-    row, col = find_tile(current_puzzle_state, 0)
+def moveDiagonal(puzzle):
+    row, col = find_tile(puzzle, 0)
 
     # Top Left Corner
     if row == 0 and col == 0:
-        new_state = swap(current_puzzle_state, [row, col], [row + 1, col + 1])
+        new_state = swap(puzzle, [row, col], [row + 1, col + 1])
     # Top Right Corner
-    elif row == 0 and col == len(current_puzzle_state[0]) - 1:
-        new_state = swap(current_puzzle_state, [row, col], [row + 1, col - 1])
+    elif row == 0 and col == len(puzzle[0]) - 1:
+        new_state = swap(puzzle, [row, col], [row + 1, col - 1])
     # Bottom Left Corner
-    elif row == len(current_puzzle_state) - 1 and col == 0:
-        new_state = swap(current_puzzle_state, [row, col], [row - 1, col + 1])
+    elif row == len(puzzle) - 1 and col == 0:
+        new_state = swap(puzzle, [row, col], [row - 1, col + 1])
     # Bottom Right Corner
-    elif row == len(current_puzzle_state) - 1 and col == len(current_puzzle_state[0]) - 1:
-        new_state = swap(current_puzzle_state, [row, col], [row - 1, col - 1])
+    elif row == len(puzzle) - 1 and col == len(puzzle[0]) - 1:
+        new_state = swap(puzzle, [row, col], [row - 1, col - 1])
     else:
         raise Exception('Illegal move -> cannot move DIAGONAL')
     return new_state
 
 
-def getDiagWrap(current_puzzle_state):
-    row, col = find_tile(current_puzzle_state, 0)
+def getDiagWrap(puzzle):
+    row, col = find_tile(puzzle, 0)
 
     # Top Left Corner
     if row == 0 and col == 0:
-        return current_puzzle_state[-1][-1]
+        return puzzle[-1][-1]
     # Top Right Corner
-    elif row == 0 and col == len(current_puzzle_state[0]) - 1:
-        return current_puzzle_state[-1][0]
+    elif row == 0 and col == len(puzzle[0]) - 1:
+        return puzzle[-1][0]
     # Bottom Left Corner
-    elif row == len(current_puzzle_state) - 1 and col == 0:
-        return current_puzzle_state[0][-1]
+    elif row == len(puzzle) - 1 and col == 0:
+        return puzzle[0][-1]
     # Bottom Right Corner
-    elif row == len(current_puzzle_state) - 1 and col == len(current_puzzle_state[0]) - 1:
-        return current_puzzle_state[0][0]
+    elif row == len(puzzle) - 1 and col == len(puzzle[0]) - 1:
+        return puzzle[0][0]
     else:
         raise Exception('Illegal move -> cannot get DIAGONAL WRAP')
 
 
-def moveDiagWrap(current_puzzle_state):
-    row, col = find_tile(current_puzzle_state, 0)
+def moveDiagWrap(puzzle):
+    row, col = find_tile(puzzle, 0)
 
     # Top Left Corner
     if row == 0 and col == 0:
-        new_state = swap(current_puzzle_state, [row, col], [-1, -1])
+        new_state = swap(puzzle, [row, col], [-1, -1])
     # Top Right Corner
-    elif row == 0 and col == len(current_puzzle_state[0]) - 1:
-        new_state = swap(current_puzzle_state, [row, col], [-1, 0])
+    elif row == 0 and col == len(puzzle[0]) - 1:
+        new_state = swap(puzzle, [row, col], [-1, 0])
     # Bottom Left Corner
-    elif row == len(current_puzzle_state) - 1 and col == 0:
-        new_state = swap(current_puzzle_state, [row, col], [0, -1])
+    elif row == len(puzzle) - 1 and col == 0:
+        new_state = swap(puzzle, [row, col], [0, -1])
     # Bottom Right Corner
-    elif row == len(current_puzzle_state) - 1 and col == len(current_puzzle_state[0]) - 1:
-        new_state = swap(current_puzzle_state, [row, col], [0, 0])
+    elif row == len(puzzle) - 1 and col == len(puzzle[0]) - 1:
+        new_state = swap(puzzle, [row, col], [0, 0])
     else:
         raise Exception('Illegal move -> cannot move DIAGONAL WRAP')
     return new_state
@@ -275,26 +298,27 @@ def swap(puzzle, current_pos, next_pos):
 
 # Generates the available moves
 # Return a PriorityQueue with (cost, moved_tile, state_after the move 
-def generate_children(current_puzzle_state):
+def generate_children(puzzle):
     children = Q.PriorityQueue()
-    row, col = find_tile(current_puzzle_state, 0)
+    row, col = find_tile(puzzle, 0)
 
-    copy_puzzle = copy.deepcopy(current_puzzle_state) # idk if good copy or not
+    copy_puzzle = copy.deepcopy(puzzle) # idk if good copy or not
 
     if row != 0:
-        children.put((1, getUp(current_puzzle_state), moveUp(copy_puzzle)))
-    if row != len(current_puzzle_state) - 1:
-        children.put((1, getDown(current_puzzle_state), moveDown(copy_puzzle)))
+        children.put((1, getUp(puzzle), moveUp(copy_puzzle)))
+    if row != len(puzzle) - 1:
+        children.put((1, getDown(puzzle), moveDown(copy_puzzle)))
     if col != 0:
-        children.put((1, getLeft(current_puzzle_state), moveLeft(copy_puzzle)))
-    if col != len(current_puzzle_state[0]) - 1:
-        children.put((1, getRight(current_puzzle_state), moveRight(copy_puzzle)))
+        children.put((1, getLeft(puzzle), moveLeft(copy_puzzle)))
+    if col != len(puzzle[0]) - 1:
+        children.put((1, getRight(puzzle), moveRight(copy_puzzle)))
 
     if ((row == 0 and col == 0)
-    or (row == 0 and col == len(current_puzzle_state[0]) - 1)
-    or (row == len(current_puzzle_state) - 1 and col == 0)
-    or (row == len(current_puzzle_state) - 1 and col == len(current_puzzle_state[0]) - 1)):
-        children.put((2, getWrap(current_puzzle_state), moveWrap(copy_puzzle)))
-        children.put((3, getDiagonal(current_puzzle_state), moveDiagonal(copy_puzzle)))
-        children.put((3, getDiagWrap(current_puzzle_state), moveDiagWrap(copy_puzzle)))
+    or (row == 0 and col == len(puzzle[0]) - 1)
+    or (row == len(puzzle) - 1 and col == 0)
+    or (row == len(puzzle) - 1 and col == len(puzzle[0]) - 1)):
+        children.put((2, getRowWrap(puzzle), moveRowWrap(copy_puzzle)))
+        children.put((2, getColWrap(puzzle), moveColWrap(copy_puzzle)))
+        children.put((3, getDiagonal(puzzle), moveDiagonal(copy_puzzle)))
+        children.put((3, getDiagWrap(puzzle), moveDiagWrap(copy_puzzle)))
     return children
