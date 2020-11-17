@@ -39,6 +39,10 @@ def h1(puzzle):
     return h1_val1 if h1_val1 < h1_val2 else h1_val2
 
 
+def h2(puzzle): # TODO
+    return print()
+
+
 # Finds the coordinates of the 0 tile
 def find_zero(current_puzzle_state):
     for row in range(len(current_puzzle_state)):
