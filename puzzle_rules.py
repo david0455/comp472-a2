@@ -26,40 +26,62 @@ def h0(current_puzzle_state):
 
 # Count the number of tiles out of place compared to goal
 def h1(puzzle):
-    h1_val1 = 0 # goal 1
-    h1_val2 = 0 # goal 2
+    h1_g1 = 0 # goal 1
+    h1_g2 = 0 # goal 2
     goal1 = np.array([[1, 2, 3, 4],[5, 6, 7, 0]])
     goal2 = np.array([[1, 3, 5, 7], [2, 4, 6, 0]])
     for row in range(len(puzzle)):
         for col in range(len(puzzle[0])):
             if puzzle[row][col] != goal1[row][col]:
-                h1_val1 += 1
+                h1_g1 += 1
             if puzzle[row][col] != goal2[row][col]:
-                h1_val2 += 1
-    return h1_val1 if h1_val1 < h1_val2 else h1_val2
+                h1_g2 += 1
+
+    if h1_g1 < h1_g2:
+        return h1_g1
+    else:
+        return h1_g2
 
 
-def h2(puzzle): # TODO
-    return print()
+# Count the number of steps of each tile to reach goal position
+def h2(puzzle):
+    h2_g1 = 0  
+    h2_g2 = 0
+    goal1 = np.array([[1, 2, 3, 4],[5, 6, 7, 0]])
+    goal2 = np.array([[1, 3, 5, 7], [2, 4, 6, 0]])
+
+    for row in range(len(puzzle)):
+        for col in range(len(puzzle[0])):
+            current_tile = puzzle[row][col]
+            goal_tile1 = find_tile(goal1, current_tile)
+            goal_tile2 = find_tile(goal2, current_tile)
+
+            h2_g1 += abs((goal_tile1[0] - row) + (goal_tile1[1] - col))
+            h2_g2 += abs((goal_tile2[0] - row) + (goal_tile2[1] - col))
+            
+    if h2_g1 < h2_g2:
+        return h2_g1
+    else:
+        return h2_g2
 
 
 # Finds the coordinates of the 0 tile
-def find_zero(current_puzzle_state):
+def find_tile(current_puzzle_state, tileNumber):
     for row in range(len(current_puzzle_state)):
         for col in range(len(current_puzzle_state[0])):
-            if current_puzzle_state[row][col] == 0:
+            if current_puzzle_state[row][col] == tileNumber:
                 return row, col
 
 
 def getUp(current_puzzle_state):
-    row, col = find_zero(current_puzzle_state)
+    row, col = find_tile(current_puzzle_state, 0)
     if row == 0:
         raise Exception('Illegal move -> cannot get UP')
     return current_puzzle_state[row-1][col]
 
 
 def moveUp(current_puzzle_state):
-    row, col = find_zero(current_puzzle_state)
+    row, col = find_tile(current_puzzle_state, 0)
 
     # If ZERO is at first row, then illegal
     if row == 0:
@@ -71,7 +93,7 @@ def moveUp(current_puzzle_state):
 
 
 def getDown(current_puzzle_state):
-    row, col = find_zero(current_puzzle_state)
+    row, col = find_tile(current_puzzle_state, 0)
 
     if row ==  len(current_puzzle_state) - 1:
         raise Exception('Illegal move -> cannot get DOWN')
@@ -80,7 +102,7 @@ def getDown(current_puzzle_state):
 
 
 def moveDown(current_puzzle_state):
-    row, col = find_zero(current_puzzle_state)
+    row, col = find_tile(current_puzzle_state, 0)
 
     # If ZERO is at last row, then illegal
     if row == len(current_puzzle_state) - 1:
@@ -92,7 +114,7 @@ def moveDown(current_puzzle_state):
 
 
 def getLeft(current_puzzle_state):
-    row, col = find_zero(current_puzzle_state)
+    row, col = find_tile(current_puzzle_state, 0)
 
     if col == 0:
         raise Exception('Illegal move -> cannot get LEFT')
@@ -101,7 +123,7 @@ def getLeft(current_puzzle_state):
 
 
 def moveLeft(current_puzzle_state):
-    row, col = find_zero(current_puzzle_state)
+    row, col = find_tile(current_puzzle_state, 0)
 
     # If ZERO is at first column, then illegal
     if col == 0:
@@ -113,7 +135,7 @@ def moveLeft(current_puzzle_state):
 
 
 def getRight(current_puzzle_state):
-    row, col = find_zero(current_puzzle_state)
+    row, col = find_tile(current_puzzle_state, 0)
 
     if col == len(current_puzzle_state[0]) - 1:
         raise Exception('Illegal move -> cannot get RIGHT')
@@ -122,7 +144,7 @@ def getRight(current_puzzle_state):
 
 
 def moveRight(current_puzzle_state):
-    row, col = find_zero(current_puzzle_state)
+    row, col = find_tile(current_puzzle_state, 0)
 
     # If ZERO is at last column, then illegal
     if col == len(current_puzzle_state[0]) - 1:
@@ -134,7 +156,7 @@ def moveRight(current_puzzle_state):
 
 
 def getWrap(current_puzzle_state):
-    row, col = find_zero(current_puzzle_state)
+    row, col = find_tile(current_puzzle_state, 0)
 
     if (row == 0 or row == len(current_puzzle_state) - 1) and col == 0:
         return current_puzzle_state[row][-1]
@@ -145,7 +167,7 @@ def getWrap(current_puzzle_state):
 
 
 def moveWrap(current_puzzle_state):
-    row, col = find_zero(current_puzzle_state)
+    row, col = find_tile(current_puzzle_state, 0)
 
     if (row == 0 or row == len(current_puzzle_state) - 1) and col == 0:
         new_state = swap(current_puzzle_state, [row, col], [row, -1])
@@ -157,7 +179,7 @@ def moveWrap(current_puzzle_state):
 
 
 def getDiagonal(current_puzzle_state):
-    row, col = find_zero(current_puzzle_state)
+    row, col = find_tile(current_puzzle_state, 0)
 
     # Top Left Corner
     if row == 0 and col == 0:
@@ -176,7 +198,7 @@ def getDiagonal(current_puzzle_state):
 
 
 def moveDiagonal(current_puzzle_state):
-    row, col = find_zero(current_puzzle_state)
+    row, col = find_tile(current_puzzle_state, 0)
 
     # Top Left Corner
     if row == 0 and col == 0:
@@ -196,7 +218,7 @@ def moveDiagonal(current_puzzle_state):
 
 
 def getDiagWrap(current_puzzle_state):
-    row, col = find_zero(current_puzzle_state)
+    row, col = find_tile(current_puzzle_state, 0)
 
     # Top Left Corner
     if row == 0 and col == 0:
@@ -215,7 +237,7 @@ def getDiagWrap(current_puzzle_state):
 
 
 def moveDiagWrap(current_puzzle_state):
-    row, col = find_zero(current_puzzle_state)
+    row, col = find_tile(current_puzzle_state, 0)
 
     # Top Left Corner
     if row == 0 and col == 0:
@@ -255,7 +277,7 @@ def swap(puzzle, current_pos, next_pos):
 # Return a PriorityQueue with (cost, moved_tile, state_after the move 
 def generate_children(current_puzzle_state):
     children = Q.PriorityQueue()
-    row, col = find_zero(current_puzzle_state)
+    row, col = find_tile(current_puzzle_state, 0)
 
     copy_puzzle = copy.deepcopy(current_puzzle_state) # idk if good copy or not
 

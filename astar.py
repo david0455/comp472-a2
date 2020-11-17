@@ -8,8 +8,8 @@ from puzzle_rules import check_goal, generate_children, h0
 class AStar():
 
     def __init__(self):
-        self.closed_state = []  # list of visited states
-        self.open_state = []   # priority queue ordered by total cost
+        self.closed_state = []
+        self.open_state = []
 
     def compare_Cost(self, child_cost, child_state, pq):
         if len(pq) != 0:

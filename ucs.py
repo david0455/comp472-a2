@@ -3,14 +3,14 @@ import pandas as pd
 import numpy as np
 import time
 
-from puzzle_r import check_goal, generate_children, h0
+from puzzle_rules import check_goal, generate_children, h0
 
 class UniformCostSearch():
 
 
     def __init__(self):
         self.closed_state = []  # list of visited states
-        self.open_state = []  # priority queue ordered by total cost
+        self.open_state = []
 
 
     def compare_Cost(self, child_cost, child_state, pq):
