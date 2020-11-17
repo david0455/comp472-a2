@@ -134,9 +134,8 @@ def main():
     initial_states = get_Start_State("samplePuzzles.txt")
     
     for i in range(len(initial_states)):
-        for j in range(2):
-            solve = UniformCostSearch()
-            solve.ucs(initial_states[i].tolist(), i)
+        solve = UniformCostSearch()
+        solve.ucs(initial_states[i].tolist(), i)
 
 
 if __name__ == '__main__':
