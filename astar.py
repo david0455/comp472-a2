@@ -13,7 +13,6 @@ class AStar():
         self.closed_state = []  # list of visited states
         self.open_state = []   # priority queue ordered by total cost
 
-    
     def compare_Cost(self, child_cost, child_state, pq):
         if len(pq) != 0:
             for cost in pq:

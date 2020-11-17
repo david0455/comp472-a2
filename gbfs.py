@@ -4,6 +4,7 @@ import pandas as pd
 import time
 from rules_gbfs import check_goal, generate_children, find_zero
 
+
 class GreedyBFS():
 
     def __init__(self):
