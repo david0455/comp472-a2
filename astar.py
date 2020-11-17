@@ -2,14 +2,45 @@ import queue as Q
 import pandas as pd
 import numpy as np
 import time
+import re
 
-from puzzle_rules import check_goal, generate_children, h0
+from puzzle_rules import check_goal, generate_children, h0, h1, h2
 
 class AStar():
 
     def __init__(self):
-        self.closed_state = []  # list of visited states
-        self.open_state = []   # priority queue ordered by total cost
+        self.closed_state = []
+        self.open_state = []
+
+
+    def print_searchpath(self, index, heuristic, closed):
+        filename = ".//3_astar_output//" + str(index) + '_astar-h' + str(heuristic) + '_search.txt'
+        file = open(filename, 'a')
+
+        for elem in closed:
+            f, g, h, puzzle = elem
+            strpuzzle = ' '.join(str(e) for e in puzzle)
+            strpuzzle = re.sub(r"\[|\]|,", '', strpuzzle)
+            file.write(str(f) + ' ' + str(g) + ' ' + str(h) + ' ' + strpuzzle + '\n')
+        file.close()
+    
+
+    def print_solutionpath(self, index, heuristic, path, execution_time, solved):
+        filename = ".//3_astar_output//" + str(index) + '_astar-h' + str(heuristic) + '_solution.txt'
+        file = open(filename, 'a')
+        total_cost = 0
+        for elem in path:
+            tile, cost, puzzle = elem
+            total_cost += cost
+            strpuzzle = ' '.join(str(e) for e in puzzle)
+            strpuzzle = re.sub(r"\[|\]|,", '', strpuzzle)
+            file.write(str(tile) + ' ' + str(cost) + ' ' + strpuzzle + '\n')
+        if solved:
+            file.write(str(total_cost) + ' ' + str(execution_time) + '\n')
+        else:
+            file.write("no solution" + '\n')
+        file.close()
+
 
     def compare_Cost(self, child_cost, child_state, pq):
         if len(pq) != 0:
@@ -38,10 +69,14 @@ class AStar():
         self.f = path_cost + heuristic_cost
         return self.f
 
-    def astar(self, initial_state):
+    def astar(self, initial_state, index, heuristic):
         start = time.time()
-        # initial-state: (f(n), g(n), h(n), curr _puzzle = Starting Puzzle, Path = [tile,cost, current_puzzle])  
-        self.open_state.append([h0(initial_state), 0, h0(initial_state), initial_state, list([0, h0(initial_state), initial_state])]) 
+        # initial-state: (f(n), g(n), h(n), curr _puzzle = Starting Puzzle, Path = [tile,cost, current_puzzle])
+        if heuristic == 1:
+            self.open_state.append([h1(initial_state), 0, h1(initial_state), initial_state, [[0, h1(initial_state), initial_state]]]) 
+        elif heuristic == 2:
+            self.open_state.append([h2(initial_state), 0, h2(initial_state), initial_state, [[0, h2(initial_state), initial_state]]]) 
+        
         while (len(self.open_state) > 0):
 
             self.open_state.sort(key=lambda x: x[0])
@@ -51,7 +86,9 @@ class AStar():
             if check_goal(self.current_puzzle): # Check if current puzzle state is goal state
                 end = time.time()
                 execution_time = end - start
-                self.closed_state.append((self.current_puzzle))
+                self.closed_state.append([self.curr_f, self.curr_g, self.curr_h, self.current_puzzle])
+                self.print_solutionpath(index, heuristic, self.path, execution_time, True)
+                self.print_searchpath(index, heuristic, self.closed_state)
                 return print("Solution found in", execution_time, "sec", self.current_puzzle)
             
             self.children = generate_children(self.current_puzzle) # generate possible successors from current puzzle state
@@ -61,7 +98,10 @@ class AStar():
 
                     self.child_path_cost, self.child_moved_tile, self.child_puzzle_state = self.children.get()
                     # Calculate each cost
-                    child_h = h0(self.child_puzzle_state)
+                    if heuristic == 1:
+                        child_h = h1(self.child_puzzle_state)
+                    elif heuristic == 2:
+                        child_h = h2(self.child_puzzle_state)
                     total_cost = self.get_path_cost(self.child_path_cost, self.curr_g) 
                     child_f = self.calc_f(total_cost, child_h)
                     
@@ -80,9 +120,11 @@ class AStar():
             
             self.closed_state.append([self.curr_f, self.curr_g, self.curr_h, self.current_puzzle])
             temp_time = time.time()
-            # if (temp_time - start) > 60:
-            #     print("No Solution")
-            #     break
+            if (temp_time - start) > 60:
+                self.print_solutionpath(index, heuristic, self.path, (temp_time - start), False)
+                self.print_searchpath(index, heuristic, self.closed_state)
+                print("No solution found under 60s")
+                break
         
         return "No Solution"
 
@@ -96,12 +138,13 @@ def get_Start_State(puzzle_file):
 
 
 def main():
-    initial_States = get_Start_State("samplePuzzles.txt")
+    initial_states = get_Start_State("samplePuzzles.txt")
     solve = AStar()
-    for i in range(len(initial_States)):
-        #solve.astar(initial_States[i].tolist())
-        solve.astar(initial_States[0].tolist())
-
+    solve.astar(initial_states[0].tolist(), 1, 1)
+    
+    # for i in range(len(initial_states)):
+    #     for j in range(2):
+    #         solve.astar(initial_states[i].tolist(), i, j+1)
 
 if __name__ == '__main__':
     main()
