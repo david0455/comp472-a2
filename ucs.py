@@ -132,12 +132,10 @@ def get_Start_State(puzzle_file):
 
 def main():
     initial_states = get_Start_State("samplePuzzles.txt")
-    solve = UniformCostSearch()
-    solve.ucs(initial_states[0].tolist(), 1)
     
-    # for i in range(len(initial_states)):
-    #     for j in range(2):
-    #         solve.astar(initial_states[i].tolist(), i, j+1)
+    for i in range(len(initial_states)):
+        solve = UniformCostSearch()
+        solve.ucs(initial_states[i].tolist(), i)
 
 
 if __name__ == '__main__':
