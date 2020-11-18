@@ -12,6 +12,24 @@ class UniformCostSearch():
     def __init__(self):
         self.closed_state = []  # list of visited states
         self.open_state = []
+        self.path = []
+
+
+    def search_visited_state(self, puzzle): 
+        for i in range(len(self.closed_state)):
+                if(puzzle == self.closed_state[i][3]):
+                    curr_f, curr_g, curr_h, current_puzzle, tile, parent_puzzle = self.closed_state[i]
+                    return tile, curr_g, current_puzzle, parent_puzzle 
+    
+
+    def backtrack(self, puzzle):   
+        parent = puzzle 
+        if parent == None: # Stopping point
+            return self.path
+        else:
+            tile, cost, current_puzzle, parent_puzzle  = self.search_visited_state(puzzle)
+            self.path.append([tile, cost, current_puzzle])
+            return self.backtrack(parent_puzzle)
 
 
     def compare_Cost(self, child_cost, child_state, pq):
@@ -50,7 +68,7 @@ class UniformCostSearch():
         file = open(filename, 'a')
 
         for elem in closed:
-            f, g, h, puzzle = elem
+            f, g, h, puzzle, tile, parent_puzzle = elem
             strpuzzle = ' '.join(str(e) for e in puzzle)
             strpuzzle = re.sub(r"\[|\]|,", '', strpuzzle)
             file.write(str(f) + ' ' + str(g) + ' ' + str(h) + ' ' + strpuzzle + '\n')
@@ -76,21 +94,22 @@ class UniformCostSearch():
     def ucs(self, initial_state, index):
             start = time.time()
             
-            # initial-state: (f(n), g(n), h(n), curr _puzzle = Starting Puzzle, Path = [tile,cost, current_puzzle])  
-            self.open_state.append([0, 0, 0, initial_state, [[0, 0, initial_state]]]) 
+            # initial-state: (f(n), g(n), h(n), curr _puzzle = Starting Puzzle, tile,cost, parent_puzzle])  
+            self.open_state.append([0, 0, 0, initial_state, 0, None]) 
 
             while len(self.open_state) > 0:
                 
                 self.open_state.sort(key=lambda x: x[0])
-                self.curr_f, self.curr_g, self.curr_h, self.current_puzzle, self.path = self.open_state.pop(0) # pop lowest cost move from open queue
+                self.curr_f, self.curr_g, self.curr_h, self.current_puzzle, self.tile, self.parent_puzzle = self.open_state.pop(0) # pop lowest cost move from open queue
 
                 # apply goal function
                 if check_goal(self.current_puzzle):
                     end = time.time()
                     execution_time = end - start
-                    self.closed_state.append([0, self.curr_g , 0, self.current_puzzle])
-
-                    self.print_solutionpath(index, self.path, execution_time, True)
+                    self.closed_state.append([0, self.curr_g , 0, self.current_puzzle, self.tile, self.parent_puzzle])
+                    path = self.backtrack(self.current_puzzle)
+                    path.reverse()
+                    self.print_solutionpath(index, path, execution_time, True)
                     self.print_searchpath(index, self.closed_state)
                     return print("Solution found in", execution_time, "sec", self.current_puzzle)
                 
@@ -105,18 +124,19 @@ class UniformCostSearch():
                         total_cost = self.get_path_cost(child_path_cost, self.curr_g) 
 
                         if not (child_puzzle_state in (item for sublist in self.open_state for item in sublist)) and not (child_puzzle_state in (item for sublist in self.closed_state for item in sublist)):  # check if the child is in closed list or open priority queue
-                            self.path.append([child_moved_tile, total_cost, child_puzzle_state])
-                            self.open_state.append([0, total_cost, 0, child_puzzle_state, self.path])
+                            self.open_state.append([0, total_cost, 0, child_puzzle_state, self.tile, self.parent_puzzle])
 
                         elif (child_puzzle_state in (item for sublist in self.open_state for item in sublist)): # if the child in priority queue has higher PATH-COST than this child, replace it
                             if self.compare_Cost(total_cost, child_puzzle_state, self.open_state): 
                                 self.open_state = self.replace_Cost(total_cost, child_puzzle_state, self.open_state)
                 
-                self.closed_state.append([0, self.curr_g , 0, self.current_puzzle])
+                self.closed_state.append([0, self.curr_g , 0, self.current_puzzle, self.tile, self.parent_puzzle])
                 temp_time = time.time()
                 if (temp_time - start) > 60:
                     print('No solution found under 60s')
-                    self.print_solutionpath(index, self.path, (temp_time - start), False)
+                    path = self.backtrack(self.current_puzzle)
+                    path.reverse()
+                    self.print_solutionpath(index, path, (temp_time - start), False)
                     self.print_searchpath(index, self.closed_state)                    
                     break
             return print("No Solution")
