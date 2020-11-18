@@ -26,3 +26,27 @@ Team name: ChickenNuggets
 
 
 **Samiha Rahman**:
+
+
+
+## How to run the code:
+
+**Prerequisites:**
+
+*Python 3.x.x mus be installed to run the code*
+
+*For more information on how to install Python go to https://www.python.org/downloads/*
+
+**Running the code:**
+
+Each algorithm is implemented on a separated files:
+
+- Uniform Cost Search: ucs.py
+
+- Greedy Best First Search: gbfs.py
+
+- A*: astar.py
+
+- Scaled GBFS: gbfs_scaled.py
+
+The different heuristics are immediatly applied one after the other after running the code.
