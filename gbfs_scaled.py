@@ -4,7 +4,7 @@ import pandas as pd
 import time
 import re
 
-from puzzle_rules import check_goal, generate_children, h1, h2
+from rules_scaled import check_goal, generate_children, h1, h2
 
 
 class GreedyBFS():
@@ -12,20 +12,36 @@ class GreedyBFS():
     def __init__(self):
         self.closed_list = []
         self.open_list = []
+        self.path = []
+
+    def search_visited_state(self, puzzle): 
+        for i in range(len(self.closed_list)):
+                if(puzzle == self.closed_list[i][3]):
+                    curr_f, curr_g, curr_h, current_puzzle, tile, parent_puzzle = self.closed_list[i]
+                    return tile, curr_h, current_puzzle, parent_puzzle 
+    
+    def backtrack(self, puzzle):   
+        parent = puzzle 
+        if parent == None: # Stopping point
+            return self.path
+        else:
+            tile, cost, current_puzzle, parent_puzzle  = self.search_visited_state(puzzle)
+            self.path.append([tile, cost, current_puzzle])
+            return self.backtrack(parent_puzzle)
 
     def print_searchpath(self, index, heuristic, closed):
-        filename = ".//2_gbfs_output//" + str(index) + '_gbfs-h' + str(heuristic) + '_search.txt'
+        filename = ".//4_gbfs_scaled_output//" + str(index) + '_gbfs-h' + str(heuristic) + '_search.txt'
         file = open(filename, 'a')
 
         for elem in closed:
-            f, g, h, puzzle = elem
+            f, g, h, puzzle, tile, parent_puzzle = elem
             strpuzzle = ' '.join(str(e) for e in puzzle)
             strpuzzle = re.sub(r"\[|\]|,", '', strpuzzle)
             file.write(str(f) + ' ' + str(g) + ' ' + str(h) + ' ' + strpuzzle + '\n')
         file.close()
     
     def print_solutionpath(self, index, heuristic, path, execution_time, solved):
-        filename = ".//2_gbfs_output//" + str(index) + '_gbfs-h' + str(heuristic) + '_solution.txt'
+        filename = ".//4_gbfs_scaled_output//" + str(index) + '_gbfs-h' + str(heuristic) + '_solution.txt'
         file = open(filename, 'a')
         total_cost = 0
         for elem in path:
@@ -43,22 +59,25 @@ class GreedyBFS():
     def gbfs(self, init_puzzle, index, heuristic):      
         start = time.time()
         if heuristic == 1:
-            self.open_list.append([h1(init_puzzle), 0, init_puzzle, [[0, 0, init_puzzle]]])
+            # [heuristic, current puzzle, tile, parent puzzle]
+            self.open_list.append([h1(init_puzzle), 0, init_puzzle, None])
         elif heuristic == 2:
-            self.open_list.append([h2(init_puzzle), 0, init_puzzle, [[0, 0, init_puzzle]]])
+            self.open_list.append([h2(init_puzzle), 0, init_puzzle, None])
 
         while len(self.open_list) > 0:
             self.open_list.sort(key=lambda x: x[0])
-            h_cost, next_tile, current_puzzle, path = self.open_list.pop(0)
+            h_cost, next_tile, current_puzzle, parent_puzzle = self.open_list.pop(0)
           
             if check_goal(current_puzzle):
                 end = time.time()
                 execution_time = end - start
                 if heuristic == 1:
-                    self.closed_list.append([0, 0, h1(current_puzzle), current_puzzle])
+                    self.closed_list.append([0, 0, h1(current_puzzle), current_puzzle, next_tile, parent_puzzle])
                 elif heuristic == 2:
-                    self.closed_list.append([0, 0, h2(current_puzzle), current_puzzle])
+                    self.closed_list.append([0, 0, h2(current_puzzle), current_puzzle, next_tile, parent_puzzle])
 
+                path = self.backtrack(current_puzzle)
+                path.reverse()
                 self.print_solutionpath(index, heuristic, path, execution_time, True)
                 self.print_searchpath(index, heuristic, self.closed_list)
                 
@@ -75,31 +94,24 @@ class GreedyBFS():
                         child_h = h2(child_state)
 
                     if not (child_state in (item for sublist in self.open_list for item in sublist)) and not (child_state in (item for sublist in self.closed_list for item in sublist)):
-                        path.append([child_tile, child_h, child_state])
-                        self.open_list.append([child_h, child_tile, child_state, path])
+                        self.open_list.append([child_h, child_tile, child_state, current_puzzle])
 
             if heuristic == 1:
-                self.closed_list.append([0, 0, h1(current_puzzle), current_puzzle])
+                self.closed_list.append([0, 0, h1(current_puzzle), current_puzzle, next_tile, parent_puzzle])
             elif heuristic == 2:
-                self.closed_list.append([0, 0, h2(current_puzzle), current_puzzle])
-            temp_time = time.time()
-            if (temp_time - start) > 60:
-                self.print_searchpath(index, heuristic, self.closed_list)
-                self.print_solutionpath(index, heuristic, path, (temp_time - start), False)
-                print("No solution found under 60s")
-                break
+                self.closed_list.append([0, 0, h2(current_puzzle), current_puzzle, next_tile, parent_puzzle])
         
         return "No Solution"
 
-def get_Start_State(puzzle_file):
+def get_start_state(puzzle_file):
     input_file = np.loadtxt(puzzle_file, delimiter=' ')
     puzzle_list = []
-    for i in range(input_file.ndim+1):
-        puzzle_list.append(input_file[i].reshape(2,4).astype(int)) # reshape 1D array(s) to 2x4 (row x col) 2D array
+    for i in range(input_file.shape[0]):
+        puzzle_list.append(input_file[i].reshape(3,4).astype(int)) # reshape 1D array(s) to 3x4 (row x col) 2D array
     return puzzle_list
 
 def main():
-    initial_puzzles = get_Start_State("samplePuzzles.txt")
+    initial_puzzles = get_start_state("scaled_random_puzzles.txt")
 
     for i in range(len(initial_puzzles)):
         for j in range(2):

@@ -9,6 +9,7 @@ from puzzle_rules import check_goal, generate_children, h0, h1, h2
 class AStar():
 
     def __init__(self):
+        self.path = []
         self.closed_state = []
         self.open_state = []
 
@@ -18,7 +19,7 @@ class AStar():
         file = open(filename, 'a')
 
         for elem in closed:
-            f, g, h, puzzle = elem
+            f, g, h, puzzle, tile, parent_puzzle = elem
             strpuzzle = ' '.join(str(e) for e in puzzle)
             strpuzzle = re.sub(r"\[|\]|,", '', strpuzzle)
             file.write(str(f) + ' ' + str(g) + ' ' + str(h) + ' ' + strpuzzle + '\n')
@@ -71,28 +72,48 @@ class AStar():
         self.f = path_cost + heuristic_cost
         return self.f
 
+
+    def search_visited_state(self, puzzle): 
+        for i in range(len(self.closed_state)):
+                if(puzzle == self.closed_state[i][3]):
+                    curr_f, curr_g, curr_h, current_puzzle, tile, parent_puzzle = self.closed_state[i]
+                    return tile, curr_f, current_puzzle, parent_puzzle 
+    
+
+    def backtrack(self, puzzle):   
+        parent = puzzle 
+        if parent == None: # Stopping point
+            return self.path
+        else:
+            tile, cost, current_puzzle, parent_puzzle  = self.search_visited_state(puzzle)
+            self.path.append([tile, cost, current_puzzle])
+            return self.backtrack(parent_puzzle)
+
+
     def astar(self, initial_state, index, heuristic):
         start = time.time()
-        # initial-state: (f(n), g(n), h(n), curr _puzzle = Starting Puzzle, Path = [tile,cost, current_puzzle])
+        # initial-state: (f(n), g(n), h(n), curr _puzzle = Starting Puzzle, tile, parent_puzzle)
         if heuristic == 1:
-            self.open_state.append([h1(initial_state), 0, h1(initial_state), initial_state, [[0, 0, initial_state]]]) 
+            self.open_state.append([h1(initial_state), 0, h1(initial_state), initial_state, 0, None]) 
         elif heuristic == 2:
-            self.open_state.append([h2(initial_state), 0, h2(initial_state), initial_state, [[0, 0, initial_state]]]) 
+            self.open_state.append([h2(initial_state), 0, h2(initial_state), initial_state, 0, None]) 
         
         while (len(self.open_state) > 0):
 
             self.open_state.sort(key=lambda x: x[0])
-            self.curr_f, self.curr_g, self.curr_h, self.current_puzzle, self.path = self.open_state.pop(0) # pop lowest cost move from open queue
+            self.curr_f, self.curr_g, self.curr_h, self.current_puzzle, self.tile, self.parent_puzzle = self.open_state.pop(0) # pop lowest cost move from open queue
 
             # apply goal function
             if check_goal(self.current_puzzle): # Check if current puzzle state is goal state
                 end = time.time()
                 execution_time = end - start
-                self.closed_state.append([self.curr_f, self.curr_g, self.curr_h, self.current_puzzle])
-                self.print_solutionpath(index, heuristic, self.path, execution_time, True)
+                self.closed_state.append([self.curr_f, self.curr_g, self.curr_h, self.current_puzzle, self.tile, self.parent_puzzle])
+                path = self.backtrack(self.current_puzzle)
+                path.reverse()
+                self.print_solutionpath(index, heuristic, path, execution_time, True)
                 self.print_searchpath(index, heuristic, self.closed_state)
                 return print("Solution found in", execution_time, "sec", self.current_puzzle)
-            
+
             self.children = generate_children(self.current_puzzle) # generate possible successors from current puzzle state
 
             if(len(self.children.queue) > 0 ):
@@ -113,17 +134,17 @@ class AStar():
 
                     elif (self.child_puzzle_state in (item for sublist in self.closed_state for item in sublist)): # check if child is in closed list
                         if self.compare_Cost(child_f, self.child_puzzle_state, self.open_state):  # if child_f is lower than the cost inside closed list, put it back to open_state
-                            self.path.append([self.child_moved_tile, child_f, self.child_puzzle_state])
-                            self.open_state.append([child_f, total_cost, child_h, self.child_puzzle_state, self.path])
+                            self.open_state.append([child_f, total_cost, child_h, self.child_puzzle_state, self.child_moved_tile, self.current_puzzle])
 
                     else:
-                        self.path.append([self.child_moved_tile, child_f, self.child_puzzle_state])
-                        self.open_state.append([child_f, total_cost, child_h, self.child_puzzle_state, self.path])
+                        self.open_state.append([child_f, total_cost, child_h, self.child_puzzle_state, self.child_moved_tile, self.current_puzzle])
             
-            self.closed_state.append([self.curr_f, self.curr_g, self.curr_h, self.current_puzzle])
+            self.closed_state.append([self.curr_f, self.curr_g, self.curr_h, self.current_puzzle, self.tile, self.parent_puzzle])
             temp_time = time.time()
             if (temp_time - start) > 60:
-                self.print_solutionpath(index, heuristic, self.path, (temp_time - start), False)
+                path = self.backtrack(self.current_puzzle)
+                path.reverse()
+                self.print_solutionpath(index, heuristic, path, (temp_time - start), False)
                 self.print_searchpath(index, heuristic, self.closed_state)
                 print("No solution found under 60s")
                 break
@@ -134,14 +155,14 @@ class AStar():
 def get_Start_State(puzzle_file):
     input_file = np.loadtxt(puzzle_file, delimiter=' ')
     puzzle_list = []
-    for i in range(input_file.ndim+1):
+    for i in range(input_file.shape[0]):
         puzzle_list.append(input_file[i].reshape(2,4).astype(int)) # reshape 1D array(s) to 2x4 (row x col) 2D array
     return puzzle_list
 
 
 def main():
-    initial_states = get_Start_State("samplePuzzles.txt")
-    
+    initial_states = get_Start_State("random_puzzle.txt")
+
     for i in range(len(initial_states)):
         for j in range(2):
             solve = AStar()
