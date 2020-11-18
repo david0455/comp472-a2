@@ -91,15 +91,15 @@ class GreedyBFS():
         
         return "No Solution"
 
-def get_Start_State(puzzle_file):
+def get_start_state(puzzle_file):
     input_file = np.loadtxt(puzzle_file, delimiter=' ')
     puzzle_list = []
-    for i in range(input_file.ndim+1):
+    for i in range(input_file.shape[0]):
         puzzle_list.append(input_file[i].reshape(2,4).astype(int)) # reshape 1D array(s) to 2x4 (row x col) 2D array
     return puzzle_list
 
 def main():
-    initial_puzzles = get_Start_State("samplePuzzles.txt")
+    initial_puzzles = get_start_state("samplePuzzles.txt")
 
     for i in range(len(initial_puzzles)):
         for j in range(2):

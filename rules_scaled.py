@@ -4,8 +4,16 @@ import copy
 
 
 def check_goal(puzzle):
-    goal1 = np.array([[1, 2, 3, 4],[5, 6, 7, 0]])
-    goal2 = np.array([[1, 3, 5, 7], [2, 4, 6, 0]])
+    goal1 = np.array([
+        [1, 2, 3, 4],
+        [5, 6, 7, 8],
+        [9, 10, 11, 0]
+    ])
+    goal2 = np.array([
+        [1, 4, 7, 10], 
+        [2, 5, 8, 11],
+        [3, 6, 9, 0]
+    ])
     current_state = np.array(puzzle)
 
     if (current_state == goal1).all() or (current_state == goal2).all():
@@ -26,10 +34,18 @@ def h0(puzzle):
 
 # Count the number of tiles out of place compared to goal
 def h1(puzzle):
-    h1_g1 = 0 # goal 1
-    h1_g2 = 0 # goal 2
-    goal1 = np.array([[1, 2, 3, 4],[5, 6, 7, 0]])
-    goal2 = np.array([[1, 3, 5, 7], [2, 4, 6, 0]])
+    h1_g1 = 0 # score for goal 1
+    h1_g2 = 0 # score for goal 2
+    goal1 = np.array([
+        [1, 2, 3, 4],
+        [5, 6, 7, 8],
+        [9, 10, 11, 0]
+    ])
+    goal2 = np.array([
+        [1, 4, 7, 10], 
+        [2, 5, 8, 11],
+        [3, 6, 9, 0]
+    ])
     for row in range(len(puzzle)):
         for col in range(len(puzzle[0])):
             if puzzle[row][col] != goal1[row][col]:
@@ -47,8 +63,16 @@ def h1(puzzle):
 def h2(puzzle):
     h2_g1 = 0  
     h2_g2 = 0
-    goal1 = np.array([[1, 2, 3, 4],[5, 6, 7, 0]])
-    goal2 = np.array([[1, 3, 5, 7], [2, 4, 6, 0]])
+    goal1 = np.array([
+        [1, 2, 3, 4],
+        [5, 6, 7, 8],
+        [9, 10, 11, 0]
+    ])
+    goal2 = np.array([
+        [1, 4, 7, 10], 
+        [2, 5, 8, 11],
+        [3, 6, 9, 0]
+    ])
 
     for row in range(len(puzzle)):
         for col in range(len(puzzle[0])):
