@@ -4,7 +4,7 @@ import pandas as pd
 import time
 import re
 
-from puzzle_rules import check_goal, generate_children, h1, h2
+from rules_scaled import check_goal, generate_children, h1, h2
 
 
 class GreedyBFS():
@@ -82,29 +82,27 @@ class GreedyBFS():
                 self.closed_list.append([0, 0, h1(current_puzzle), current_puzzle])
             elif heuristic == 2:
                 self.closed_list.append([0, 0, h2(current_puzzle), current_puzzle])
-            temp_time = time.time()
-            if (temp_time - start) > 60:
-                self.print_searchpath(index, heuristic, self.closed_list)
-                self.print_solutionpath(index, heuristic, path, (temp_time - start), False)
-                print("No solution found under 60s")
-                break
         
         return "No Solution"
 
-def get_Start_State(puzzle_file):
+def get_start_state(puzzle_file):
     input_file = np.loadtxt(puzzle_file, delimiter=' ')
     puzzle_list = []
-    for i in range(input_file.ndim+1):
-        puzzle_list.append(input_file[i].reshape(2,4).astype(int)) # reshape 1D array(s) to 2x4 (row x col) 2D array
+    for i in range(input_file.shape[0]):
+        puzzle_list.append(input_file[i].reshape(3,4).astype(int)) # reshape 1D array(s) to 3x4 (row x col) 2D array
     return puzzle_list
 
 def main():
-    initial_puzzles = get_Start_State("samplePuzzles.txt")
+    initial_puzzles = get_start_state("scaled_random_puzzles.txt")
 
-    for i in range(len(initial_puzzles)):
-        for j in range(2):
-            solve = GreedyBFS()
-            solve.gbfs(initial_puzzles[i].tolist(), i, j+1)
+    # for i in range(len(initial_puzzles)):
+    #     for j in range(2):
+    #         solve = GreedyBFS()
+    #         solve.gbfs(initial_puzzles[i].tolist(), i, j+1)
+
+    print(initial_puzzles[0].tolist())
+    solve = GreedyBFS()
+    solve.gbfs(initial_puzzles[0].tolist(), 0, 1)
        
 
 if __name__ == '__main__':
