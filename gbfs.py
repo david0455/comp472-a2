@@ -92,7 +92,7 @@ class GreedyBFS():
                         child_h = h2(child_state)
 
                     if not (child_state in (item for sublist in self.open_list for item in sublist)) and not (child_state in (item for sublist in self.closed_list for item in sublist)):
-                        self.open_list.append([child_h, child_state, child_tile, parent_puzzle])
+                        self.open_list.append([child_h, child_state, child_tile, current_puzzle])
 
             if heuristic == 1:
                 self.closed_list.append([0, 0, h1(current_puzzle), current_puzzle, next_tile, parent_puzzle])

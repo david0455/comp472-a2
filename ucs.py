@@ -124,7 +124,7 @@ class UniformCostSearch():
                         total_cost = self.get_path_cost(child_path_cost, self.curr_g) 
 
                         if not (child_puzzle_state in (item for sublist in self.open_state for item in sublist)) and not (child_puzzle_state in (item for sublist in self.closed_state for item in sublist)):  # check if the child is in closed list or open priority queue
-                            self.open_state.append([0, total_cost, 0, child_puzzle_state, self.tile, self.parent_puzzle])
+                            self.open_state.append([0, total_cost, 0, child_puzzle_state, child_moved_tile, self.current_puzzle])
 
                         elif (child_puzzle_state in (item for sublist in self.open_state for item in sublist)): # if the child in priority queue has higher PATH-COST than this child, replace it
                             if self.compare_Cost(total_cost, child_puzzle_state, self.open_state): 

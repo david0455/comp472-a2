@@ -15,10 +15,10 @@ class GreedyBFS():
         self.path = []
 
     def search_visited_state(self, puzzle): 
-        for i in range(len(self.closed_state)):
-                if(puzzle == self.closed_state[i][3]):
-                    curr_f, curr_g, curr_h, current_puzzle, tile, parent_puzzle = self.closed_state[i]
-                    return tile, curr_f, current_puzzle, parent_puzzle 
+        for i in range(len(self.closed_list)):
+                if(puzzle == self.closed_list[i][3]):
+                    curr_f, curr_g, curr_h, current_puzzle, tile, parent_puzzle = self.closed_list[i]
+                    return tile, curr_h, current_puzzle, parent_puzzle 
     
     def backtrack(self, puzzle):   
         parent = puzzle 
@@ -30,18 +30,18 @@ class GreedyBFS():
             return self.backtrack(parent_puzzle)
 
     def print_searchpath(self, index, heuristic, closed):
-        filename = ".//2_gbfs_output//" + str(index) + '_gbfs-h' + str(heuristic) + '_search.txt'
+        filename = ".//4_gbfs_scaled_output//" + str(index) + '_gbfs-h' + str(heuristic) + '_search.txt'
         file = open(filename, 'a')
 
         for elem in closed:
-            f, g, h, puzzle = elem
+            f, g, h, puzzle, tile, parent_puzzle = elem
             strpuzzle = ' '.join(str(e) for e in puzzle)
             strpuzzle = re.sub(r"\[|\]|,", '', strpuzzle)
             file.write(str(f) + ' ' + str(g) + ' ' + str(h) + ' ' + strpuzzle + '\n')
         file.close()
     
     def print_solutionpath(self, index, heuristic, path, execution_time, solved):
-        filename = ".//2_gbfs_output//" + str(index) + '_gbfs-h' + str(heuristic) + '_solution.txt'
+        filename = ".//4_gbfs_scaled_output//" + str(index) + '_gbfs-h' + str(heuristic) + '_solution.txt'
         file = open(filename, 'a')
         total_cost = 0
         for elem in path:
