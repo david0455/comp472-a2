@@ -59,7 +59,7 @@ class GreedyBFS():
     def gbfs(self, init_puzzle, index, heuristic):      
         start = time.time()
         if heuristic == 1:
-            # [heuristic, next tile, current puzzle, parent puzzle]
+            # [heuristic, current puzzle, tile, parent puzzle]
             self.open_list.append([h1(init_puzzle), 0, init_puzzle, None])
         elif heuristic == 2:
             self.open_list.append([h2(init_puzzle), 0, init_puzzle, None])
@@ -113,14 +113,10 @@ def get_start_state(puzzle_file):
 def main():
     initial_puzzles = get_start_state("scaled_random_puzzles.txt")
 
-    # for i in range(len(initial_puzzles)):
-    #     for j in range(2):
-    #         solve = GreedyBFS()
-    #         solve.gbfs(initial_puzzles[i].tolist(), i, j+1)
-
-    print(initial_puzzles[0].tolist())
-    solve = GreedyBFS()
-    solve.gbfs(initial_puzzles[0].tolist(), 0, 1)
+    for i in range(len(initial_puzzles)):
+        for j in range(2):
+            solve = GreedyBFS()
+            solve.gbfs(initial_puzzles[i].tolist(), i, j+1)
        
 
 if __name__ == '__main__':
