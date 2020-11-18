@@ -18,15 +18,15 @@ Team name: ChickenNuggets
 
 
 **David Chen**:
-
+Code, Analysis
 
 
 **Jack Leung**:
-
+Code, Analysis
 
 
 **Samiha Rahman**:
-
+Code, Analysis
 
 
 ## How to run the code:
@@ -49,4 +49,4 @@ Each algorithm is implemented on a separated files:
 
 - Scaled GBFS: gbfs_scaled.py
 
-The different heuristics are immediatly applied one after the other after running the code.
+The different heuristics are immediately applied one after the other after running the code.
