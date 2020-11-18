@@ -161,7 +161,7 @@ def get_Start_State(puzzle_file):
 
 
 def main():
-    initial_states = get_Start_State("random_puzzle.txt")
+    initial_states = get_Start_State("random_puzzles.txt")
 
     for i in range(len(initial_states)):
         for j in range(2):
