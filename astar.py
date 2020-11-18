@@ -13,6 +13,33 @@ class AStar():
         self.closed_state = []
         self.open_state = []
 
+        self.totalcost = 0
+        self.execution_time = 0
+        self.length_solution = 0
+        self.length_search = 0
+        self.no_solution = 0
+    
+    def getLengthSearch(self, index, closed, heuristic):
+        filename = 'AStar_Length_of_Search' + str(heuristic)  +  '.txt'
+        file = open(filename, 'a')
+        file.write(str(len(closed))+ '\n')
+        file.close()
+
+    def numberOfNoSolution(self, heuristic):
+        filename = 'AStar_no_solution.txt' + str(heuristic)  +  '.txt'
+        file = open(filename, 'a')
+        file.write('1' + '\n')
+        file.close()
+    
+    def getTimeCostLengthSolution(self, index, path, execution_time, solved, heuristic):
+        filename = 'Astar_length_solution.txt' + str(heuristic)  +  '.txt'
+        file = open(filename, 'a')
+        for elem in path:
+            tile, cost, puzzle = elem
+            self.totalcost += cost
+        if solved:
+            file.write("totalcost: " + str(self.totalcost) + ' ' + "execution_time: " + str(execution_time) + ' ' + "length: " + str(len(path)) + '\n')
+        file.close()
 
     def print_searchpath(self, index, heuristic, closed):
         filename = ".//3_astar_output//" + str(index) + '_astar-h' + str(heuristic) + '_search.txt'
@@ -106,13 +133,15 @@ class AStar():
             # apply goal function
             if check_goal(self.current_puzzle): # Check if current puzzle state is goal state
                 end = time.time()
-                execution_time = end - start
+                self.execution_time = end - start
                 self.closed_state.append([self.curr_f, self.curr_g, self.curr_h, self.current_puzzle, self.tile, self.parent_puzzle])
                 path = self.backtrack(self.current_puzzle)
                 path.reverse()
-                self.print_solutionpath(index, heuristic, path, execution_time, True)
-                self.print_searchpath(index, heuristic, self.closed_state)
-                return print("Solution found in", execution_time, "sec", self.current_puzzle)
+                self.getTimeCostLengthSolution(index, path, self.execution_time, True, heuristic)
+                self.getLengthSearch(index, self.closed_state, heuristic)
+                # self.print_solutionpath(index, heuristic, path, execution_time, True)
+                # self.print_searchpath(index, heuristic, self.closed_state)
+                return print("Solution found in", self.execution_time, "sec", self.current_puzzle)
 
             self.children = generate_children(self.current_puzzle) # generate possible successors from current puzzle state
 
@@ -142,11 +171,13 @@ class AStar():
             self.closed_state.append([self.curr_f, self.curr_g, self.curr_h, self.current_puzzle, self.tile, self.parent_puzzle])
             temp_time = time.time()
             if (temp_time - start) > 60:
-                path = self.backtrack(self.current_puzzle)
-                path.reverse()
-                self.print_solutionpath(index, heuristic, path, (temp_time - start), False)
-                self.print_searchpath(index, heuristic, self.closed_state)
-                print("No solution found under 60s")
+                self.numberOfNoSolution(heuristic)
+
+                # path = self.backtrack(self.current_puzzle)
+                # path.reverse()
+                # self.print_solutionpath(index, heuristic, path, (temp_time - start), False)
+                # self.print_searchpath(index, heuristic, self.closed_state)
+                # print("No solution found under 60s")
                 break
         
         return "No Solution"
@@ -161,7 +192,7 @@ def get_Start_State(puzzle_file):
 
 
 def main():
-    initial_states = get_Start_State("random_puzzle.txt")
+    initial_states = get_Start_State("random_puzzles.txt")
 
     for i in range(len(initial_states)):
         for j in range(2):

@@ -111,12 +111,33 @@ def get_start_state(puzzle_file):
     return puzzle_list
 
 def main():
-    initial_puzzles = get_start_state("scaled_random_puzzles.txt")
+    # initial_puzzles = get_start_state("scaled_random_puzzles.txt")
 
-    for i in range(len(initial_puzzles)):
-        for j in range(2):
-            solve = GreedyBFS()
-            solve.gbfs(initial_puzzles[i].tolist(), i, j+1)
+    # for i in range(len(initial_puzzles)):
+    #     for j in range(2):
+    #         solve = GreedyBFS()
+    #         solve.gbfs(initial_puzzles[i].tolist(), i, j+1)
+
+    np3x4 = np.loadtxt('scaled_3x4.txt', delimiter=' ')
+    puzzle3x4 = []
+    puzzle3x4.append(np3x4[0].reshape(3,4).astype(int))
+    solve3x4 = GreedyBFS()
+    solve3x4.gbfs(puzzle3x4[0].tolist(), 0, 1) # h1
+    solve3x4.gbfs(puzzle3x4[0].tolist(), 0, 2) # h2
+
+    np4x4 = np.loadtxt('scaled_4x4.txt', delimiter=' ')
+    puzzle4x4 = []
+    puzzle4x4.append(np4x4[0].reshape(4,4).astype(int))
+    solve4x4 = GreedyBFS()
+    solve4x4.gbfs(puzzle4x4[0].tolist(), 0, 1) # h1
+    solve4x4.gbfs(puzzle4x4[0].tolist(), 0, 2) # h2
+
+    puzzle5x4 = np.loadtxt('scaled_5x4.txt', delimiter=' ')
+    puzzle5x4 = []
+    puzzle5x4.append(np5x4[0].reshape(5,4).astype(int))
+    solve5x4 = GreedyBFS()
+    solve5x4.gbfs(puzzle5x4[0].tolist(), 0, 1) # h1
+    solve5x4.gbfs(puzzle5x4[0].tolist(), 0, 2) # h2
        
 
 if __name__ == '__main__':

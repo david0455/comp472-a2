@@ -14,6 +14,35 @@ class GreedyBFS():
         self.open_list = []
         self.path = []
 
+        self.totalcost = 0
+        self.execution_time = 0
+        self.length_solution = 0
+        self.length_search = 0
+        self.no_solution = 0
+    
+    def getLengthSearch(self, index, closed, heuristic):
+        filename = 'GBFS_Length_of_Search' + str(heuristic)  +  '.txt'
+        file = open(filename, 'a')
+        file.write(str(len(closed))+ '\n')
+        file.close()
+
+    def numberOfNoSolution(self, heuristic):
+        filename = 'GBFS_no_solution' + str(heuristic)  +  '.txt'
+        file = open(filename, 'a')
+        file.write('1' + '\n')
+        file.close()
+    
+    def getTimeCostLengthSolution(self, index, path, execution_time, solved, heuristic):
+        filename = 'GBFS_length_solution' + str(heuristic)  +  '.txt'
+        file = open(filename, 'a')
+        for elem in path:
+            tile, cost, puzzle = elem
+            self.totalcost += cost
+        if solved:
+            file.write("totalcost: " + str(self.totalcost) + ' ' + "execution_time: " + str(execution_time) + ' ' + "length: " + str(len(path)) + '\n')
+        file.close()
+
+
     def search_visited_state(self, puzzle): 
         for i in range(len(self.closed_list)):
                 if(puzzle == self.closed_list[i][3]):
@@ -69,17 +98,19 @@ class GreedyBFS():
           
             if check_goal(current_puzzle):
                 end = time.time()
-                execution_time = end - start
+                self.execution_time = end - start
                 if heuristic == 1:
                     self.closed_list.append([0, 0, h1(current_puzzle), current_puzzle, next_tile, parent_puzzle])
                 elif heuristic == 2:
                     self.closed_list.append([0, 0, h2(current_puzzle), current_puzzle, next_tile, parent_puzzle])
                 path = self.backtrack(current_puzzle)
                 path.reverse()
-                self.print_solutionpath(index, heuristic, path, execution_time, True)
-                self.print_searchpath(index, heuristic, self.closed_list)
+                self.getTimeCostLengthSolution(index, path, self.execution_time, True, heuristic)
+                self.getLengthSearch(index, self.closed_list, heuristic)
+                # self.print_solutionpath(index, heuristic, path, execution_time, True)
+                # self.print_searchpath(index, heuristic, self.closed_list)
                 
-                return print("Solution found in", execution_time, "sec", current_puzzle)
+                return print("Solution found in", self.execution_time, "sec", current_puzzle)
 
             children = generate_children(current_puzzle)
 
@@ -100,10 +131,12 @@ class GreedyBFS():
                 self.closed_list.append([0, 0, h2(current_puzzle), current_puzzle, next_tile, parent_puzzle])
             temp_time = time.time()
             if (temp_time - start) > 60:
-                self.print_searchpath(index, heuristic, self.closed_list)
-                path = self.backtrack(current_puzzle)
-                path.reverse()
-                self.print_solutionpath(index, heuristic, path, (temp_time - start), False)
+                self.numberOfNoSolution(heuristic)
+                # path = self.backtrack(current_puzzle)
+                # path.reverse()
+
+                # self.print_searchpath(index, heuristic, self.closed_list)
+                # self.print_solutionpath(index, heuristic, path, (temp_time - start), False)
                 print("No solution found under 60s")
                 break
         

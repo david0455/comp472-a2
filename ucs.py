@@ -14,6 +14,34 @@ class UniformCostSearch():
         self.open_state = []
         self.path = []
 
+        self.totalcost = 0
+        self.execution_time = 0
+        self.length_solution = 0
+        self.length_search = 0
+        self.no_solution = 0
+    
+    def getLengthSearch(self, index, closed):
+        filename = 'UCS_Length_of_Search.txt'
+        file = open(filename, 'a')
+        file.write(str(len(closed))+ '\n')
+        file.close()
+
+    def numberOfNoSolution(self):
+        filename = "UCS_no_solution.txt" 
+        file = open(filename, 'a')
+        file.write('1' + '\n')
+        file.close()
+    
+    def getTimeCostLengthSolution(self, index, path, execution_time, solved):
+        filename = 'UCS_length_solution.txt'
+        file = open(filename, 'a')
+        for elem in path:
+            tile, cost, puzzle = elem
+            self.totalcost += cost
+        if solved:
+            file.write(str(self.totalcost) + ' ' + str(execution_time) + ' ' + "length: " + str(len(path)) + '\n')
+        file.close()
+
 
     def search_visited_state(self, puzzle): 
         for i in range(len(self.closed_state)):
@@ -53,8 +81,8 @@ class UniformCostSearch():
 
      # calculate total path cost
     def get_path_cost(self, new_cost, old_cost):
-        total_cost = new_cost + old_cost
-        return total_cost
+        self.totalcost = new_cost + old_cost
+        return self.totalcost
 
 
     # Calculate f(n) = g(n) + h(n)
@@ -77,15 +105,14 @@ class UniformCostSearch():
     def print_solutionpath(self, index, path, execution_time, solved):
         filename = ".//1_ucs_output//" + str(index) + '_ucs_solution.txt'
         file = open(filename, 'a')
-        total_cost = 0
         for elem in path:
             tile, cost, puzzle = elem
-            total_cost += cost
+            self.totalcost += cost
             strpuzzle = ' '.join(str(e) for e in puzzle)
             strpuzzle = re.sub(r"\[|\]|,", '', strpuzzle)
             file.write(str(tile) + ' ' + str(cost) + ' ' + strpuzzle + '\n')
         if solved:
-            file.write(str(total_cost) + ' ' + str(execution_time) + '\n')
+            file.write(str(self.totalcost) + ' ' + str(execution_time) + '\n')
         else:
             file.write("no solution" + '\n')
         file.close()
@@ -105,13 +132,16 @@ class UniformCostSearch():
                 # apply goal function
                 if check_goal(self.current_puzzle):
                     end = time.time()
-                    execution_time = end - start
+                    self.execution_time = end - start
                     self.closed_state.append([0, self.curr_g , 0, self.current_puzzle, self.tile, self.parent_puzzle])
                     path = self.backtrack(self.current_puzzle)
                     path.reverse()
-                    self.print_solutionpath(index, path, execution_time, True)
-                    self.print_searchpath(index, self.closed_state)
-                    return print("Solution found in", execution_time, "sec", self.current_puzzle)
+
+                    self.getTimeCostLengthSolution(index, path, self.execution_time, True)
+                    self.getLengthSearch(index, self.closed_state)
+                    # self.print_solutionpath(index, path, execution_time, True)
+                    # self.print_searchpath(index, self.closed_state)
+                    return print("Solution found in", self.execution_time, "sec", self.current_puzzle)
                 
                 # generate possible successors from current puzzle state
                 possible_moves = generate_children(self.current_puzzle) 
@@ -121,23 +151,24 @@ class UniformCostSearch():
                         child_path_cost, child_moved_tile, child_puzzle_state = possible_moves.get()
                         
                         # Calculate each cost
-                        total_cost = self.get_path_cost(child_path_cost, self.curr_g) 
+                        self.totalcost = self.get_path_cost(child_path_cost, self.curr_g) 
 
                         if not (child_puzzle_state in (item for sublist in self.open_state for item in sublist)) and not (child_puzzle_state in (item for sublist in self.closed_state for item in sublist)):  # check if the child is in closed list or open priority queue
-                            self.open_state.append([0, total_cost, 0, child_puzzle_state, child_moved_tile, self.current_puzzle])
+                            self.open_state.append([0, self.totalcost, 0, child_puzzle_state, child_moved_tile, self.current_puzzle])
 
                         elif (child_puzzle_state in (item for sublist in self.open_state for item in sublist)): # if the child in priority queue has higher PATH-COST than this child, replace it
-                            if self.compare_Cost(total_cost, child_puzzle_state, self.open_state): 
-                                self.open_state = self.replace_Cost(total_cost, child_puzzle_state, self.open_state)
+                            if self.compare_Cost(self.totalcost, child_puzzle_state, self.open_state): 
+                                self.open_state = self.replace_Cost(self.totalcost, child_puzzle_state, self.open_state)
                 
                 self.closed_state.append([0, self.curr_g , 0, self.current_puzzle, self.tile, self.parent_puzzle])
                 temp_time = time.time()
                 if (temp_time - start) > 60:
-                    print('No solution found under 60s')
-                    path = self.backtrack(self.current_puzzle)
-                    path.reverse()
-                    self.print_solutionpath(index, path, (temp_time - start), False)
-                    self.print_searchpath(index, self.closed_state)                    
+                    self.numberOfNoSolution()
+                    # print('No solution found under 60s')
+                    # path = self.backtrack(self.current_puzzle)
+                    # path.reverse()
+                    # self.print_solutionpath(index, path, (temp_time - start), False)
+                    # self.print_searchpath(index, self.closed_state)                    
                     break
             return print("No Solution")
 

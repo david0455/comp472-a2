@@ -1,0 +1,10 @@
+cost: 6 execution_time: 31.846492528915405 length: 9
+cost: 6 execution_time: 52.461355209350586 length: 9
+cost: 3 execution_time: 10.03490400314331 length: 8
+cost: 1 execution_time: 1.466782808303833 length: 7
+cost: 5 execution_time: 7.660934925079346 length: 8
+cost: 7 execution_time: 0.8029310703277588 length: 7
+cost: 3 execution_time: 5.734710454940796 length: 8
+cost: 0 execution_time: 25.83677387237549 length: 9
+cost: 2 execution_time: 2.742798328399658 length: 8
+cost: 3 execution_time: 5.799951791763306 length: 8
