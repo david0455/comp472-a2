@@ -49,4 +49,5 @@ Each algorithm is implemented on a separated files:
 
 - Scaled GBFS: gbfs_scaled.py
 
-The different heuristics are immediately applied one after the other after running the code.
+The different heuristics are immediately applied one after the other after running each code file.
+The output files will also be automatically generated.
