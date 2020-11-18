@@ -58,7 +58,7 @@ class GreedyBFS():
                     self.closed_list.append([0, 0, h1(current_puzzle), current_puzzle])
                 elif heuristic == 2:
                     self.closed_list.append([0, 0, h2(current_puzzle), current_puzzle])
-
+                    
                 self.print_solutionpath(index, heuristic, path, execution_time, True)
                 self.print_searchpath(index, heuristic, self.closed_list)
                 

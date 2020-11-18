@@ -25,7 +25,7 @@ def check_goal(puzzle):
 # If the last tile of current puzzle state is not equal to zero, h(n) = 1
 def h0(puzzle):
     # puzzle[1][3] = Row 2 Col 4
-    if(puzzle[1][3] == 0):
+    if(puzzle[(len(puzzle)-1)][(len(puzzle[0])-1)] == 0):
         h = 0
     else:
         h = 1
@@ -222,6 +222,7 @@ def moveColWrap(puzzle):
         new_state = swap(puzzle, [row, col], [0, col])
     else:
         raise Exception('Illegal move -> cannot move COL WRAP')
+    return new_state
 
 
 def getDiagonal(puzzle):
